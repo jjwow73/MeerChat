@@ -1,19 +1,17 @@
-package pkg
+package server
 
 import (
+	"../message"
+
 	"fmt"
 	"golang.org/x/net/websocket"
 )
-
-type Message struct {
-	Text string `json:"text"`
-}
 
 type hub struct {
 	clients          map[string]*websocket.Conn
 	addClientChan    chan *websocket.Conn
 	removeClientChan chan *websocket.Conn
-	broadcastChan    chan Message
+	broadcastChan    chan message.Message
 }
 
 func NewHub() *hub {
@@ -21,22 +19,7 @@ func NewHub() *hub {
 		clients:          make(map[string]*websocket.Conn),
 		addClientChan:    make(chan *websocket.Conn),
 		removeClientChan: make(chan *websocket.Conn),
-		broadcastChan:    make(chan Message),
-	}
-}
-
-func Handler(ws *websocket.Conn, h *hub) {
-	go h.run()
-	h.addClientChan <- ws
-	for {
-		var m Message
-		err := websocket.JSON.Receive(ws, &m)
-		if err != nil {
-			h.broadcastChan <- Message{err.Error()}
-			h.removeClient(ws)
-			return
-		}
-		h.broadcastChan <- m
+		broadcastChan:    make(chan message.Message),
 	}
 }
 
@@ -60,7 +43,7 @@ func (h *hub) addClient(conn *websocket.Conn) {
 	h.clients[conn.RemoteAddr().String()] = conn
 }
 
-func (h *hub) broadcastMessage(m Message) {
+func (h *hub) broadcastMessage(m message.Message) {
 	for _, conn := range h.clients {
 		err := websocket.JSON.Send(conn, m)
 		if err != nil {
