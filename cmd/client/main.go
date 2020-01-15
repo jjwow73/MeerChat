@@ -12,7 +12,11 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-var addr = flag.String("addr", "localhost:8080", "http service address")
+var (
+	addr     = flag.String("addr", "localhost:8080", "http service address")
+	id       = flag.String("id", "1", "A id of a room")
+	password = flag.String("password", "1", "A password of a room")
+)
 
 func main() {
 	flag.Parse()
@@ -21,7 +25,8 @@ func main() {
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, os.Interrupt)
 
-	u := url.URL{Scheme: "ws", Host: *addr, Path: "/ws"}
+	query := "id=" + *id + "&" + "password=" + *password
+	u := url.URL{Scheme: "ws", Host: *addr, Path: "/ws", RawQuery: query}
 	log.Printf("connecting to %s", u.String())
 
 	c, _, err := websocket.DefaultDialer.Dial(u.String(), nil)

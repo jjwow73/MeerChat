@@ -1,24 +1,34 @@
-package pkg
+package server
 
 import (
+	"../client"
+
 	"github.com/gorilla/websocket"
 	"log"
 	"net/http"
 )
 
 // serveWs handles websocket requests from the peer.
-func ServeHandler(hub *Hub, w http.ResponseWriter, r *http.Request) {
+func ServeHandler(w http.ResponseWriter, r *http.Request) {
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Println(err)
 		return
 	}
-	client := &Client{conn: conn, send: make(chan []byte, 256)}
+
+	id, password, ok := getParamsFromUrl(r)
+	if !ok {
+		return
+	}
+	room, _ := GetRoom(id, password)
+	hub := room.Hub
+
+	client := &client.Client{Conn: conn, Send: make(chan []byte, 256)}
 	hub.register <- client
 
 	go func() {
 		for {
-			message, ok := <-client.send
+			message, ok := <-client.Send
 			if !ok {
 				// The hub closed the channel.
 				conn.WriteMessage(websocket.CloseMessage, []byte{})
@@ -35,8 +45,6 @@ func ServeHandler(hub *Hub, w http.ResponseWriter, r *http.Request) {
 		}
 	}()
 
-	//go client.WritePump()
-
 	for {
 		_, message, err := conn.ReadMessage()
 		if err != nil {
@@ -47,4 +55,20 @@ func ServeHandler(hub *Hub, w http.ResponseWriter, r *http.Request) {
 
 		hub.broadcast <- message
 	}
+}
+
+func getParamsFromUrl(r *http.Request) (id string, password string, ok bool){
+	ids, ok := r.URL.Query()["id"]
+	if !ok || len(ids[0]) < 1 {
+		log.Println("Url Param 'id' is missing")
+		return id, password, ok
+	}
+	id = ids[0]
+	passwords, ok := r.URL.Query()["password"]
+	if !ok || len(ids[0]) < 1 {
+		log.Println("Url Param 'password' is missing")
+		return id, password, ok
+	}
+	password = passwords[0]
+	return id, password, ok
 }

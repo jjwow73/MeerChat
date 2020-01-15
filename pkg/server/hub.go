@@ -1,6 +1,8 @@
-package pkg
+package server
 
 import (
+	"../client"
+
 	"github.com/gorilla/websocket"
 )
 
@@ -13,24 +15,24 @@ var upgrader = websocket.Upgrader{
 // clients.
 type Hub struct {
 	// Registered clients.
-	clients map[*Client]bool
+	clients map[*client.Client]bool
 
 	// Inbound messages from the clients.
 	broadcast chan []byte
 
 	// Register requests from the clients.
-	register chan *Client
+	register chan *client.Client
 
 	// Unregister requests from clients.
-	unregister chan *Client
+	unregister chan *client.Client
 }
 
 func NewHub() *Hub {
 	return &Hub{
 		broadcast:  make(chan []byte),
-		register:   make(chan *Client),
-		unregister: make(chan *Client),
-		clients:    make(map[*Client]bool),
+		register:   make(chan *client.Client),
+		unregister: make(chan *client.Client),
+		clients:    make(map[*client.Client]bool),
 	}
 }
 
@@ -42,14 +44,14 @@ func (h *Hub) Run() {
 		case client := <-h.unregister:
 			if _, ok := h.clients[client]; ok {
 				delete(h.clients, client)
-				close(client.send)
+				close(client.Send)
 			}
 		case message := <-h.broadcast:
 			for client := range h.clients {
 				select {
-				case client.send <- message:
+				case client.Send <- message:
 				default:
-					close(client.send)
+					close(client.Send)
 					delete(h.clients, client)
 				}
 			}
