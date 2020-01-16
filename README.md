@@ -20,7 +20,8 @@ Shell CUI 구현하기. shell 명령어 되면서 상단/우측/좌측/하단/ �
 - [x] URL로부터 Query parameter를 읽어오는 기능(id, password)
 - [x] 받아온 id와 password로 room을 만들거나 가져오는 기능
     - [x] 이미 존재하는 방이라면 password가 올바른지 체크하는 기능
-    - [ ] 패스워드가 틀리다면 모든 메세지는 meer로 보이는 기능
+    - [x] 패스워드가 틀리다면 모든 메세지는 meer로 보이는 기능
+    - [x] 패스워드가 틀리다면 보내는 메세지가 다른 사람에게 meer로 보이는 기능
 - [x] client로부터 메세지를 읽어오는 기능
 - [x] 받은 메세지를 해당 room 안의 다른 client에게 뿌리는 기능
 - [x] client와 연결이 끊어졌다면 해당 client를 초기화하는 기능

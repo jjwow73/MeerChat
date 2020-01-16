@@ -8,6 +8,11 @@ import (
 	"net/http"
 )
 
+const (
+	meer = "meer"
+	meerModeMessage = "You've got wrong password. Enter to Meerkat mode."
+)
+
 func ServeHandler(w http.ResponseWriter, r *http.Request) {
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
@@ -19,13 +24,17 @@ func ServeHandler(w http.ResponseWriter, r *http.Request) {
 	if !ok {
 		return
 	}
-	room, _ := getRoom(id, password)
+	room, auth := getRoom(id, password)
+	if !auth {
+		conn.WriteMessage(websocket.TextMessage, []byte(meerModeMessage))
+	}
 
 	client := &client.Client{Conn: conn, Send: make(chan []byte, 256)}
 	room.register(client)
+	defer room.unregister(client)
 
-	go sendMessageToClient(room, client)
-	receiveMessageFromClient(room, client)
+	go sendMessageToClient(room, client, auth)
+	receiveMessageFromClient(room, client, auth)
 }
 
 func getParamsFromUrl(r *http.Request) (id string, password string, ok bool) {
@@ -44,10 +53,12 @@ func getParamsFromUrl(r *http.Request) (id string, password string, ok bool) {
 	return id, password, ok
 }
 
-func sendMessageToClient(room *Room, client *client.Client) {
-	defer room.unregister(client)
+func sendMessageToClient(room *Room, client *client.Client, auth bool) {
 	for {
 		message, ok := <-client.Send
+		if !auth {
+			message = []byte(meer)
+		}
 		if !ok {
 			log.Println("channel closed")
 			client.Conn.WriteMessage(websocket.CloseMessage, []byte{})
@@ -63,10 +74,12 @@ func sendMessageToClient(room *Room, client *client.Client) {
 	}
 }
 
-func receiveMessageFromClient(room *Room, client *client.Client) {
-	defer room.unregister(client)
+func receiveMessageFromClient(room *Room, client *client.Client, auth bool) {
 	for {
 		_, message, err := client.Conn.ReadMessage()
+		if !auth {
+			message = []byte(meer)
+		}
 		if err != nil {
 			log.Println("read error:", err)
 			break
