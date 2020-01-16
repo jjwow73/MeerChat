@@ -8,7 +8,6 @@ import (
 	"net/http"
 )
 
-// serveWs handles websocket requests from the peer.
 func ServeHandler(w http.ResponseWriter, r *http.Request) {
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
@@ -20,44 +19,16 @@ func ServeHandler(w http.ResponseWriter, r *http.Request) {
 	if !ok {
 		return
 	}
-	room, _ := GetRoom(id, password)
-	hub := room.Hub
+	room, _ := getRoom(id, password)
 
 	client := &client.Client{Conn: conn, Send: make(chan []byte, 256)}
-	hub.register <- client
+	room.register(client)
 
-	go func() {
-		for {
-			message, ok := <-client.Send
-			if !ok {
-				// The hub closed the channel.
-				conn.WriteMessage(websocket.CloseMessage, []byte{})
-				return
-			}
-
-			err = conn.WriteMessage(websocket.TextMessage, message)
-			if err != nil {
-				hub.broadcast <- []byte(err.Error())
-				hub.unregister <- client
-				log.Println("write:", err)
-				return
-			}
-		}
-	}()
-
-	for {
-		_, message, err := conn.ReadMessage()
-		if err != nil {
-			log.Println("read:", err)
-			break
-		}
-		log.Printf("message: %s", message)
-
-		hub.broadcast <- message
-	}
+	go sendMessageToClient(room, client)
+	receiveMessageFromClient(room, client)
 }
 
-func getParamsFromUrl(r *http.Request) (id string, password string, ok bool){
+func getParamsFromUrl(r *http.Request) (id string, password string, ok bool) {
 	ids, ok := r.URL.Query()["id"]
 	if !ok || len(ids[0]) < 1 {
 		log.Println("Url Param 'id' is missing")
@@ -71,4 +42,37 @@ func getParamsFromUrl(r *http.Request) (id string, password string, ok bool){
 	}
 	password = passwords[0]
 	return id, password, ok
+}
+
+func sendMessageToClient(room *Room, client *client.Client) {
+	defer room.unregister(client)
+	for {
+		message, ok := <-client.Send
+		if !ok {
+			log.Println("channel closed")
+			client.Conn.WriteMessage(websocket.CloseMessage, []byte{})
+			return
+		}
+
+		err := client.Conn.WriteMessage(websocket.TextMessage, message)
+		if err != nil {
+			room.broadcast([]byte (err.Error()))
+			log.Println("write error:", err)
+			return
+		}
+	}
+}
+
+func receiveMessageFromClient(room *Room, client *client.Client) {
+	defer room.unregister(client)
+	for {
+		_, message, err := client.Conn.ReadMessage()
+		if err != nil {
+			log.Println("read error:", err)
+			break
+		}
+		log.Printf("message: %s", message)
+
+		room.broadcast(message)
+	}
 }

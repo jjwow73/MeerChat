@@ -1,25 +1,27 @@
 package server
 
-import "log"
+import (
+	"../client"
 
+	"log"
+)
 var rooms roomList
 
 func init() {
-	rooms = roomList{}
-	rooms.rooms = map[string]*Room{}
+	rooms = roomList{rooms: map[string]*Room{}}
 }
 
 type Room struct {
 	id       string
 	password string
-	Hub      *Hub
+	hub      *Hub
 }
 
 type roomList struct {
 	rooms map[string]*Room
 }
 
-func GetRoom(id string, password string) (room *Room, auth bool) {
+func getRoom(id string, password string) (room *Room, auth bool) {
 	room, exist := rooms.rooms[id]
 	if exist {
 		if password == room.password {
@@ -27,14 +29,15 @@ func GetRoom(id string, password string) (room *Room, auth bool) {
 		}
 		return room, false
 	}
-	hub := NewHub()
-	go hub.Run()
-	room = &Room{id: id, password: password, Hub: hub}
+
+	hub := newHub()
+	go hub.run()
+	room = &Room{id: id, password: password, hub: hub}
 	rooms.rooms[id] = room
 	return room, true
 }
 
-func RemoveRoom(id string) (exist bool){
+func removeRoom(id string) (exist bool) {
 	room, exist := rooms.rooms[id]
 	if !exist {
 		return exist
@@ -45,3 +48,17 @@ func RemoveRoom(id string) (exist bool){
 	return exist
 }
 
+func (room *Room) broadcast(message []byte) {
+	room.hub.broadcast <- message
+}
+
+func (room *Room) register(client *client.Client) {
+	room.hub.register <- client
+}
+
+func (room *Room) unregister(client *client.Client) {
+	room.hub.unregister <- client
+	if len(room.hub.clients) == 0 {
+		removeRoom(room.id)
+	}
+}
