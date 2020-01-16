@@ -2,7 +2,6 @@ package server
 
 import (
 	"../client"
-	"context"
 	"log"
 
 	"github.com/gorilla/websocket"
@@ -32,7 +31,7 @@ func newHub() *Hub {
 	return hub
 }
 
-func (h *Hub) run(ctx context.Context) {
+func (h *Hub) run() {
 	for {
 		select {
 		case client := <-h.register:
@@ -57,8 +56,6 @@ func (h *Hub) run(ctx context.Context) {
 					delete(h.clients, client)
 				}
 			}
-		case <-ctx.Done():
-			return
 		}
 	}
 }
