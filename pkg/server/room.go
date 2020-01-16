@@ -5,6 +5,7 @@ import (
 
 	"log"
 )
+
 var rooms roomList
 
 func init() {
@@ -32,8 +33,11 @@ func getRoom(id string, password string) (room *Room, auth bool) {
 
 	hub := newHub()
 	go hub.run()
+
 	room = &Room{id: id, password: password, hub: hub}
+	go room.deactivateRoom()
 	rooms.rooms[id] = room
+
 	return room, true
 }
 
@@ -58,7 +62,14 @@ func (room *Room) register(client *client.Client) {
 
 func (room *Room) unregister(client *client.Client) {
 	room.hub.unregister <- client
-	if len(room.hub.clients) == 0 {
-		removeRoom(room.id)
+}
+
+func (room *Room) deactivateRoom() {
+	select {
+	case active := <-room.hub.active:
+		if !active {
+			removeRoom(room.id)
+		}
 	}
+
 }
