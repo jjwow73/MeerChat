@@ -2,6 +2,7 @@ package server
 
 import (
 	"../client"
+	"context"
 
 	"github.com/gorilla/websocket"
 	"log"
@@ -9,7 +10,7 @@ import (
 )
 
 const (
-	meer = "meer"
+	meer            = "meer"
 	meerModeMessage = "You've got wrong password. Enter to Meerkat mode."
 )
 
@@ -19,12 +20,14 @@ func ServeHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 		return
 	}
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
 
 	id, password, ok := getParamsFromUrl(r)
 	if !ok {
 		return
 	}
-	room, auth := getRoom(id, password)
+	room, auth := getRoom(id, password, ctx)
 	if !auth {
 		conn.WriteMessage(websocket.TextMessage, []byte(meerModeMessage))
 	}
@@ -33,7 +36,7 @@ func ServeHandler(w http.ResponseWriter, r *http.Request) {
 	room.register(client)
 	defer room.unregister(client)
 
-	go sendMessageToClient(room, client, auth)
+	go sendMessageToClient(room, client, auth, ctx)
 	receiveMessageFromClient(room, client, auth)
 }
 
@@ -53,22 +56,26 @@ func getParamsFromUrl(r *http.Request) (id string, password string, ok bool) {
 	return id, password, ok
 }
 
-func sendMessageToClient(room *Room, client *client.Client, auth bool) {
+func sendMessageToClient(room *Room, client *client.Client, auth bool, ctx context.Context) {
 	for {
-		message, ok := <-client.Send
-		if !auth {
-			message = []byte(meer)
-		}
-		if !ok {
-			log.Println("channel closed")
-			client.Conn.WriteMessage(websocket.CloseMessage, []byte{})
-			return
-		}
+		select {
+		case message, ok := <-client.Send:
+			if !auth {
+				message = []byte(meer)
+			}
+			if !ok {
+				log.Println("channel closed")
+				client.Conn.WriteMessage(websocket.CloseMessage, []byte{})
+				return
+			}
 
-		err := client.Conn.WriteMessage(websocket.TextMessage, message)
-		if err != nil {
-			room.broadcast([]byte (err.Error()))
-			log.Println("write error:", err)
+			err := client.Conn.WriteMessage(websocket.TextMessage, message)
+			if err != nil {
+				room.broadcast([]byte (err.Error()))
+				log.Println("write error:", err)
+				return
+			}
+		case <-ctx.Done():
 			return
 		}
 	}

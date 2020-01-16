@@ -2,7 +2,7 @@ package server
 
 import (
 	"../client"
-
+	"context"
 	"log"
 )
 
@@ -22,7 +22,7 @@ type roomList struct {
 	rooms map[string]*Room
 }
 
-func getRoom(id string, password string) (room *Room, auth bool) {
+func getRoom(id string, password string, ctx context.Context) (room *Room, auth bool) {
 	room, exist := rooms.rooms[id]
 	if exist {
 		if password == room.password {
@@ -32,10 +32,10 @@ func getRoom(id string, password string) (room *Room, auth bool) {
 	}
 
 	hub := newHub()
-	go hub.run()
+	go hub.run(ctx)
 
 	room = &Room{id: id, password: password, hub: hub}
-	go room.deactivateRoom()
+	go room.deactivateRoom(ctx)
 	rooms.rooms[id] = room
 
 	return room, true
@@ -64,12 +64,14 @@ func (room *Room) unregister(client *client.Client) {
 	room.hub.unregister <- client
 }
 
-func (room *Room) deactivateRoom() {
+func (room *Room) deactivateRoom(ctx context.Context) {
 	select {
 	case active := <-room.hub.active:
 		if !active {
 			removeRoom(room.id)
 		}
+	case <-ctx.Done():
+		return
 	}
 
 }
