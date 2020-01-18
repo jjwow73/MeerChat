@@ -4,12 +4,6 @@ import (
 	"../../pkg/client"
 
 	"flag"
-	"log"
-	"os"
-	"os/signal"
-	"time"
-
-	"github.com/gorilla/websocket"
 )
 
 var (
@@ -19,39 +13,42 @@ var (
 )
 
 func main() {
-	flag.Parse()
-	log.SetFlags(0)
+	client.DoChatting()
 
-	interrupt := make(chan os.Signal, 1)
-	signal.Notify(interrupt, os.Interrupt)
 
-	conn, err := client.ConnectToWebsocket(addr, id, password)
-	if err != nil {
-		log.Fatal("dial:", err)
-		return
-	}
-	defer conn.Close()
-
-	done := make(chan struct{})
-	go client.ReadMessage(conn, done)
-	go client.WriteMessage(conn, done)
-
-	select {
-	case <-done:
-		log.Println("connection is broken...")
-		return
-	case <-interrupt:
-		log.Println("interrupt")
-
-		err := conn.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
-		if err != nil {
-			log.Println("write close:", err)
-			return
-		}
-		select {
-		case <-done:
-		case <-time.After(time.Second):
-		}
-		return
-	}
+	//flag.Parse()
+	//log.SetFlags(0)
+	//
+	//interrupt := make(chan os.Signal, 1)
+	//signal.Notify(interrupt, os.Interrupt)
+	//
+	//conn, err := client.connectToWebsocket(addr, id, password)
+	//if err != nil {
+	//	log.Fatal("dial:", err)
+	//	return
+	//}
+	//defer conn.Close()
+	//
+	//done := make(chan struct{})
+	//go client.ReadMessage(conn, done)
+	//go client.WriteMessage(conn, done)
+	//
+	//select {
+	//case <-done:
+	//	log.Println("connection is broken...")
+	//	return
+	//case <-interrupt:
+	//	log.Println("interrupt")
+	//
+	//	err := conn.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
+	//	if err != nil {
+	//		log.Println("write close:", err)
+	//		return
+	//	}
+	//	select {
+	//	case <-done:
+	//	case <-time.After(time.Second):
+	//	}
+	//	return
+	//}
 }

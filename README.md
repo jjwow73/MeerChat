@@ -30,12 +30,16 @@ Shell CUI 구현하기. shell 명령어 되면서 상단/우측/좌측/하단/ �
 - [x] 주소:포트, id, password가 주어지면 그에 따른 방에 웹소켓 연결 기능
 - [x] 콘솔 창에 메세지를 입력하여 전송하는 기능
 - [x] 콘솔 창에 room의 다른 client가 보낸 메세지를 받는 기능
+- [ ] 정상적/비정상적으로 종료됐을 때 서버에 메세지 보내는 기능
 - 명령어 목록
-    - [ ] meer list: 현재 join한 방들의 id와 addr 출력
-    - [ ] meer join -addr -id -password: 특정 room에 join
-    - [ ] meer room -id: 채팅을 보내거나 볼 room을 선택(이 방의 메세지만 보임)
-    - [ ] meer leave -id: 이 방을 떠나고 목록에서 제거 
-    - [ ] meer message -text: 해당 텍스트 전송
+    - [x] meer list: 현재 join한 방들의 id와 addr 출력
+    - [x] meer join -addr -id -password: 특정 room에 join
+    - [x] meer room -id: 채팅을 보내거나 볼 room을 선택(이 방의 메세지만 보임)
+    - [x] meer leave -id: 이 방을 떠나고 목록에서 제거 
+    - [x] meer message -text: 해 텍스트 전송
+- 버그 수정
+    - 정상적으로 종료됐을 때, read error 뜨는거 고치기
+    - 메세지 split 고치기
     
 ## 논의해볼 점
 - go routine이 끝나는 시점을 context로 제어
