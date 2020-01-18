@@ -21,7 +21,7 @@ Shell CUI 구현하기. shell 명령어 되면서 상단/우측/좌측/하단/ �
 - [x] 받아온 id와 password로 room을 만들거나 가져오는 기능
     - [x] 이미 존재하는 방이라면 password가 올바른지 체크하는 기능
     - [x] 패스워드가 틀리다면 모든 메세지는 meer로 보이는 기능
-    - [x] 패스워드가 틀리다면 보내는 메세지가 다른 사람에게 meer로 보이는 기능
+    - [x] 패스워드가 틀리다면 보내는 메세지가 다른 사람에게 meer로 보이는 기
 - [x] client로부터 메세지를 읽어오는 기능
 - [x] 받은 메세지를 해당 room 안의 다른 client에게 뿌리는 기능
 - [x] client와 연결이 끊어졌다면 해당 client를 초기화하는 기능
@@ -30,4 +30,13 @@ Shell CUI 구현하기. shell 명령어 되면서 상단/우측/좌측/하단/ �
 - [x] 주소:포트, id, password가 주어지면 그에 따른 방에 웹소켓 연결 기능
 - [x] 콘솔 창에 메세지를 입력하여 전송하는 기능
 - [x] 콘솔 창에 room의 다른 client가 보낸 메세지를 받는 기능
-- [ ] room을 선택하는 기능
+- 명령어 목록
+    - [ ] meer list: 현재 join한 방들의 id와 addr 출력
+    - [ ] meer join -addr -id -password: 특정 room에 join
+    - [ ] meer room -id: 채팅을 보내거나 볼 room을 선택(이 방의 메세지만 보임)
+    - [ ] meer leave -id: 이 방을 떠나고 목록에서 제거 
+    
+## 논의해볼 점
+- go routine이 끝나는 시점을 context로 제어
+    - https://dave.cheney.net/2016/12/22/never-start-a-goroutine-without-knowing-how-it-will-stop
+    - https://jaehue.github.io/post/how-to-use-golang-context/
