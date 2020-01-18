@@ -1,8 +1,6 @@
 package server
 
 import (
-	"../client"
-
 	"log"
 )
 
@@ -56,11 +54,11 @@ func (room *Room) broadcast(message []byte) {
 	room.hub.broadcast <- message
 }
 
-func (room *Room) register(client *client.Client) {
+func (room *Room) register(client *clientInfo) {
 	room.hub.register <- client
 }
 
-func (room *Room) unregister(client *client.Client) {
+func (room *Room) unregister(client *clientInfo) {
 	room.hub.unregister <- client
 }
 

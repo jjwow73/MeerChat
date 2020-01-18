@@ -1,12 +1,15 @@
 package server
 
 import (
-	"../client"
-
 	"github.com/gorilla/websocket"
 	"log"
 	"net/http"
 )
+
+var upgrader = websocket.Upgrader{
+	ReadBufferSize:  1024,
+	WriteBufferSize: 1024,
+}
 
 const (
 	meer = "meer"
@@ -29,7 +32,7 @@ func ServeHandler(w http.ResponseWriter, r *http.Request) {
 		conn.WriteMessage(websocket.TextMessage, []byte(meerModeMessage))
 	}
 
-	client := &client.Client{Conn: conn, Send: make(chan []byte, 256)}
+	client := &clientInfo{conn: conn, send: make(chan []byte, 256)}
 	room.register(client)
 	defer room.unregister(client)
 
@@ -53,19 +56,19 @@ func getParamsFromUrl(r *http.Request) (id string, password string, ok bool) {
 	return id, password, ok
 }
 
-func sendMessageToClient(room *Room, client *client.Client, auth bool) {
+func sendMessageToClient(room *Room, client *clientInfo, auth bool) {
 	for {
-		message, ok := <-client.Send
+		message, ok := <-client.send
 		if !auth {
 			message = []byte(meer)
 		}
 		if !ok {
 			log.Println("channel closed")
-			client.Conn.WriteMessage(websocket.CloseMessage, []byte{})
+			client.conn.WriteMessage(websocket.CloseMessage, []byte{})
 			return
 		}
 
-		err := client.Conn.WriteMessage(websocket.TextMessage, message)
+		err := client.conn.WriteMessage(websocket.TextMessage, message)
 		if err != nil {
 			room.broadcast([]byte (err.Error()))
 			log.Println("write error:", err)
@@ -74,9 +77,9 @@ func sendMessageToClient(room *Room, client *client.Client, auth bool) {
 	}
 }
 
-func receiveMessageFromClient(room *Room, client *client.Client, auth bool) {
+func receiveMessageFromClient(room *Room, client *clientInfo, auth bool) {
 	for {
-		_, message, err := client.Conn.ReadMessage()
+		_, message, err := client.conn.ReadMessage()
 		if !auth {
 			message = []byte(meer)
 		}

@@ -1,31 +1,29 @@
 package server
 
 import (
-	"../client"
-	"log"
-
 	"github.com/gorilla/websocket"
+	"log"
 )
 
-var upgrader = websocket.Upgrader{
-	ReadBufferSize:  1024,
-	WriteBufferSize: 1024,
+type Hub struct {
+	clients    map[*clientInfo]bool
+	broadcast  chan []byte
+	register   chan *clientInfo
+	unregister chan *clientInfo
+	active     chan bool
 }
 
-type Hub struct {
-	clients    map[*client.Client]bool
-	broadcast  chan []byte
-	register   chan *client.Client
-	unregister chan *client.Client
-	active     chan bool
+type clientInfo struct {
+	conn *websocket.Conn
+	send chan []byte // Message: server -> client
 }
 
 func newHub() *Hub {
 	hub := &Hub{
 		broadcast:  make(chan []byte),
-		register:   make(chan *client.Client),
-		unregister: make(chan *client.Client),
-		clients:    make(map[*client.Client]bool),
+		register:   make(chan *clientInfo),
+		unregister: make(chan *clientInfo),
+		clients:    make(map[*clientInfo]bool),
 		active:     make(chan bool),
 	}
 	return hub
@@ -40,7 +38,7 @@ func (h *Hub) run() {
 			log.Println("unregister occurred")
 			if _, ok := h.clients[client]; ok {
 				delete(h.clients, client)
-				close(client.Send)
+				close(client.send)
 				client = nil
 				if len(h.clients) == 0 {
 					log.Println("no client... remove hub")
@@ -50,9 +48,9 @@ func (h *Hub) run() {
 		case message := <-h.broadcast:
 			for client := range h.clients {
 				select {
-				case client.Send <- message:
+				case client.send <- message:
 				default:
-					close(client.Send)
+					close(client.send)
 					delete(h.clients, client)
 				}
 			}
