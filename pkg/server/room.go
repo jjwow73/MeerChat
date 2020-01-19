@@ -1,73 +1,85 @@
 package server
 
 import (
+	"github.com/gorilla/websocket"
 	"log"
 )
 
-var rooms roomList
+const unAuthMessage = "meer"
 
-func init() {
-	rooms = roomList{rooms: map[string]*Room{}}
-}
-
-type Room struct {
+type room struct {
 	id       string
 	password string
-	hub      *Hub
+	hub      *hub
 }
 
-type roomList struct {
-	rooms map[string]*Room
-}
+var rooms = make(map[string]*room)
 
-func getRoom(id string, password string) (room *Room, auth bool) {
-	room, exist := rooms.rooms[id]
-	if exist {
-		if password == room.password {
-			return room, true
-		}
-		return room, false
-	}
-
+func createRoom(id string, password string) *room {
 	hub := newHub()
-	go hub.run()
+	room := &room{id: id, password: password, hub: hub}
+	rooms[id] = room
 
-	room = &Room{id: id, password: password, hub: hub}
-	go room.deactivateRoom()
-	rooms.rooms[id] = room
-
-	return room, true
+	// If room has no connection then remove room
+	go func() {
+		<-hub.done
+		log.Println("no connection in room. delete room", room.id)
+		delete(rooms, room.id)
+		room = nil
+	}()
+	return room
 }
 
-func removeRoom(id string) (exist bool) {
-	room, exist := rooms.rooms[id]
-	if !exist {
-		return exist
+func getRoom(id string, password string) (room *room, auth bool) {
+	if room, exist := rooms[id]; exist {
+		return room, password == room.password
 	}
-	log.Println("delete room :", room.id)
-	room = nil
-	delete(rooms.rooms, id)
-	return exist
+	return createRoom(id, password), true
 }
 
-func (room *Room) broadcast(message []byte) {
+func (room *room) broadcast(message []byte) {
 	room.hub.broadcast <- message
 }
 
-func (room *Room) register(client *clientInfo) {
-	room.hub.register <- client
+func (room *room) register(connInfo *connInfo) {
+	room.hub.register <- connInfo
 }
 
-func (room *Room) unregister(client *clientInfo) {
-	room.hub.unregister <- client
+func (room *room) unregister(connInfo *connInfo) {
+	room.hub.unregister <- connInfo
 }
 
-func (room *Room) deactivateRoom() {
-	select {
-	case active := <-room.hub.active:
-		if !active {
-			removeRoom(room.id)
+func (room *room) receiveMessage(connInfo *connInfo) {
+	for {
+		_, message, err := connInfo.conn.ReadMessage()
+		if !connInfo.auth {
+			message = []byte(unAuthMessage)
+		}
+		if err != nil {
+			log.Println("read error:", err)
+			return
+		}
+		log.Println("message:", message)
+
+		room.broadcast(message)
+	}
+}
+
+func (room *room) sendMessage(connInfo *connInfo) {
+	for {
+		message, ok := <-connInfo.channel
+		if !connInfo.auth {
+			message = []byte(unAuthMessage)
+		}
+		if !ok {
+			log.Println("connection closed")
+			connInfo.conn.WriteMessage(websocket.CloseMessage, []byte{})
+			return
+		}
+		err := connInfo.conn.WriteMessage(websocket.TextMessage, message)
+		if err != nil {
+			log.Println("write error:", err)
+			return
 		}
 	}
-
 }

@@ -4,6 +4,12 @@ import (
 	"github.com/gorilla/websocket"
 	"log"
 	"net/http"
+	"net/url"
+)
+
+const (
+	meerModeMessage      = "You've got wrong password. Enter to Meerkat mode."
+	paramRequiredMessage = "Some parameters are missing. Check if you enter all required params."
 )
 
 var upgrader = websocket.Upgrader{
@@ -11,20 +17,24 @@ var upgrader = websocket.Upgrader{
 	WriteBufferSize: 1024,
 }
 
-const (
-	meer = "meer"
-	meerModeMessage = "You've got wrong password. Enter to Meerkat mode."
-)
+func Start(addr string) {
+	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
+		serverHandler(w, r)
+	})
+	if err := http.ListenAndServe(addr, nil); err != nil {
+		log.Fatal(err)
+	}
+}
 
-func ServeHandler(w http.ResponseWriter, r *http.Request) {
+func serverHandler(w http.ResponseWriter, r *http.Request) {
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		log.Println(err)
-		return
+		log.Fatal(err)
 	}
 
-	id, password, ok := getParamsFromUrl(r)
+	id, password, name, ok := getParamsFromUrl(r)
 	if !ok {
+		conn.WriteMessage(websocket.TextMessage, []byte(paramRequiredMessage))
 		return
 	}
 	room, auth := getRoom(id, password)
@@ -32,63 +42,35 @@ func ServeHandler(w http.ResponseWriter, r *http.Request) {
 		conn.WriteMessage(websocket.TextMessage, []byte(meerModeMessage))
 	}
 
-	client := &clientInfo{conn: conn, send: make(chan []byte, 256)}
-	room.register(client)
-	defer room.unregister(client)
+	connInfo := newConnInfo(conn, auth, name)
 
-	go sendMessageToClient(room, client, auth)
-	receiveMessageFromClient(room, client, auth)
+	room.register(connInfo)
+	defer room.unregister(connInfo)
+	go room.sendMessage(connInfo)
+	room.receiveMessage(connInfo)
 }
 
-func getParamsFromUrl(r *http.Request) (id string, password string, ok bool) {
-	ids, ok := r.URL.Query()["id"]
-	if !ok || len(ids[0]) < 1 {
-		log.Println("Url Param 'id' is missing")
-		return id, password, ok
+func getParamsFromUrl(r *http.Request) (id string, password string, name string, exist bool) {
+	id, exist = getParamFromQuery(r.URL.Query(), "id")
+	if !exist {
+		return
 	}
-	id = ids[0]
-	passwords, ok := r.URL.Query()["password"]
-	if !ok || len(ids[0]) < 1 {
-		log.Println("Url Param 'password' is missing")
-		return id, password, ok
+	password, exist = getParamFromQuery(r.URL.Query(), "password")
+	if !exist {
+		return
 	}
-	password = passwords[0]
-	return id, password, ok
+	name, exist = getParamFromQuery(r.URL.Query(), "name")
+	if !exist {
+		return
+	}
+	return
 }
 
-func sendMessageToClient(room *Room, client *clientInfo, auth bool) {
-	for {
-		message, ok := <-client.send
-		if !auth {
-			message = []byte(meer)
-		}
-		if !ok {
-			log.Println("channel closed")
-			client.conn.WriteMessage(websocket.CloseMessage, []byte{})
-			return
-		}
-
-		err := client.conn.WriteMessage(websocket.TextMessage, message)
-		if err != nil {
-			room.broadcast([]byte (err.Error()))
-			log.Println("write error:", err)
-			return
-		}
+func getParamFromQuery(query url.Values, param string) (matchedParam string, exist bool) {
+	params, exist := query[param]
+	if !exist || len(params[0]) < 1 {
+		log.Println("Url Param", param, "is missing")
+		return matchedParam, exist
 	}
-}
-
-func receiveMessageFromClient(room *Room, client *clientInfo, auth bool) {
-	for {
-		_, message, err := client.conn.ReadMessage()
-		if !auth {
-			message = []byte(meer)
-		}
-		if err != nil {
-			log.Println("read error:", err)
-			break
-		}
-		log.Printf("message: %s", message)
-
-		room.broadcast(message)
-	}
+	return params[0], exist
 }

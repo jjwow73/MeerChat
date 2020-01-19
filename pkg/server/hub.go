@@ -1,59 +1,70 @@
 package server
 
 import (
-	"github.com/gorilla/websocket"
+	"fmt"
 	"log"
 )
 
-type Hub struct {
-	clients    map[*clientInfo]bool
+type hub struct {
+	connInfos  map[*connInfo]bool
 	broadcast  chan []byte
-	register   chan *clientInfo
-	unregister chan *clientInfo
-	active     chan bool
+	register   chan *connInfo
+	unregister chan *connInfo
+	done       chan interface{}
 }
 
-type clientInfo struct {
-	conn *websocket.Conn
-	send chan []byte // Message: server -> client
-}
-
-func newHub() *Hub {
-	hub := &Hub{
+func newHub() *hub {
+	hub := &hub{
+		connInfos:  make(map[*connInfo]bool),
 		broadcast:  make(chan []byte),
-		register:   make(chan *clientInfo),
-		unregister: make(chan *clientInfo),
-		clients:    make(map[*clientInfo]bool),
-		active:     make(chan bool),
+		register:   make(chan *connInfo),
+		unregister: make(chan *connInfo),
+		done:       make(chan interface{}),
 	}
+	go hub.run()
 	return hub
 }
 
-func (h *Hub) run() {
+func (hub *hub) run() {
 	for {
 		select {
-		case client := <-h.register:
-			h.clients[client] = true
-		case client := <-h.unregister:
-			log.Println("unregister occurred")
-			if _, ok := h.clients[client]; ok {
-				delete(h.clients, client)
-				close(client.send)
-				client = nil
-				if len(h.clients) == 0 {
-					log.Println("no client... remove hub")
-					h.active <- false
-				}
-			}
-		case message := <-h.broadcast:
-			for client := range h.clients {
-				select {
-				case client.send <- message:
-				default:
-					close(client.send)
-					delete(h.clients, client)
-				}
-			}
+		case connInfo := <-hub.register:
+			hub.addConn(connInfo)
+		case connInfo := <-hub.unregister:
+			hub.removeConn(connInfo)
+		case message := <-hub.broadcast:
+			hub.sendMessageToEachConn(message)
+		case <-hub.done:
+			return
+		}
+	}
+}
+
+func (hub *hub) addConn(connInfo *connInfo) {
+	log.Println("register conn")
+	hub.connInfos[connInfo] = true
+}
+
+func (hub *hub) removeConn(connInfo *connInfo) {
+	log.Println("unregister conn")
+	if _, exist := hub.connInfos[connInfo]; exist {
+		delete(hub.connInfos, connInfo)
+		close(connInfo.channel)
+		connInfo = nil
+	}
+	// If hub has no connection then remove hub
+	if len(hub.connInfos) == 0 {
+		close(hub.done)
+	}
+}
+
+func (hub *hub) sendMessageToEachConn(message []byte) {
+	for connInfo := range hub.connInfos {
+		select {
+		case connInfo.channel <- message:
+		default:
+			log.Println("error may occurred")
+			hub.removeConn(connInfo)
 		}
 	}
 }
