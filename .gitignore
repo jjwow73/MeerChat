@@ -1,3 +1,2 @@
 .idea
-cmd/server/server
-cmd/client/client
+cmd/node/node
