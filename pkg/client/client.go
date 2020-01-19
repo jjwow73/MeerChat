@@ -44,7 +44,7 @@ func readMessage(room *room) {
 			select {
 			case <-room.done:	// normal closed
 			default:			// abnormal closed
-				log.Println("room ", room.id, " read error:", err)
+				log.Println("room", room.id, " read error:", err)
 				close(room.done)
 			}
 			return

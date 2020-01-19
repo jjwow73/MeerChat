@@ -57,7 +57,7 @@ func joinRoom(addr string, id string, password string) {
 	}
 	roomList.rooms[id] = room
 	log.Println("join to room ", id)
-	roomList.focusedId = &id
+	focusRoom(id)
 	go readMessage(room)
 	go removeRoomAtTheEnd(room)
 }
@@ -65,7 +65,7 @@ func joinRoom(addr string, id string, password string) {
 func getRoomList() {
 	log.Println("get room list")
 	for _, room := range roomList.rooms {
-		log.Println("id: ", room.id, "addr: ", room.addr)
+		log.Println("id:", room.id, "addr:", room.addr)
 	}
 }
 
@@ -75,7 +75,7 @@ func focusRoom(id string) {
 		log.Println("room doesn't exist")
 		return
 	}
-	log.Println("enter to room ", id)
+	log.Println("enter to room", id)
 	roomList.focusedId = &id
 }
 
@@ -85,7 +85,7 @@ func leaveRoom(id string) {
 		log.Println("room doesn't exist")
 		return
 	}
-	log.Println("leave room ", id)
+	log.Println("leave room", id)
 	room.conn.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
 	close(room.done)
 }
