@@ -31,12 +31,15 @@ Shell CUI 구현하기. shell 명령어 되면서 상단/우측/좌측/하단/ �
 - [x] 콘솔 창에 메세지를 입력하여 전송하는 기능
 - [x] 콘솔 창에 room의 다른 client가 보낸 메세지를 받는 기능
 - [x] 정상적/비정상적으로 종료됐을 때 서버에 메세지 보내는 기능
+- [ ] 방에 입장시 콘솔창 클리어 기능
+- [ ] 다른 방에 있을 때의 기록을 저장해뒀다가 출력하는 기능
 - 명령어 목록
     - [x] meer list: 현재 join한 방들의 id와 addr 출력
     - [x] meer join -addr -id -password: 특정 room에 join
     - [x] meer room -id: 채팅을 보내거나 볼 room을 선택(이 방의 메세지만 보임)
     - [x] meer leave -id: 이 방을 떠나고 목록에서 제거 
     - [x] meer message -text: 해 텍스트 전송
+    - [ ] meer help: 명령어 도움말(meer + 알 수 없는 명령어 일때도 출력)
     
 ## 논의해볼 점
 - go routine이 끝나는 시점을 context로 제어
