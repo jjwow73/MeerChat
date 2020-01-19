@@ -46,12 +46,11 @@ func handleCommandEnter(text string) {
 }
 
 func handleCommandMessage(text string) {
-	ifCommandMessage, _ := regexp.MatchString(commandMessageRegex, text)
-	if !ifCommandMessage {
+	re, err := regexp.Compile(commandMessageRegex)
+	if err != nil || !re.MatchString(text){
 		return
 	}
-	parseText := strings.Split(text, " ")
-	writeMessage(parseText[2])
+	writeMessage(re.FindStringSubmatch(text)[1])
 }
 
 func handleCommandList(text string) {

@@ -37,8 +37,6 @@ Shell CUI 구현하기. shell 명령어 되면서 상단/우측/좌측/하단/ �
     - [x] meer room -id: 채팅을 보내거나 볼 room을 선택(이 방의 메세지만 보임)
     - [x] meer leave -id: 이 방을 떠나고 목록에서 제거 
     - [x] meer message -text: 해 텍스트 전송
-- 버그 수정
-    - 메세지 split 고치기
     
 ## 논의해볼 점
 - go routine이 끝나는 시점을 context로 제어
