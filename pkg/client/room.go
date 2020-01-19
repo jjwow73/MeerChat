@@ -17,7 +17,6 @@ type room struct {
 	password string
 	conn     *websocket.Conn
 	done     chan interface{}
-	connErr  chan interface{}
 }
 
 type rooms struct {
@@ -39,7 +38,6 @@ func newRoom(addr string, id string, password string) (r *room, err error) {
 		password: password,
 		conn:     conn,
 		done:     make(chan interface{}),
-		connErr:  make(chan interface{}),
 	}, nil
 }
 
@@ -61,7 +59,7 @@ func joinRoom(addr string, id string, password string) {
 	log.Println("join to room ", id)
 	roomList.focusedId = &id
 	go readMessage(room)
-	go deleteRoom(room)
+	go removeRoomAtTheEnd(room)
 }
 
 func getRoomList() {
@@ -88,16 +86,12 @@ func leaveRoom(id string) {
 		return
 	}
 	log.Println("leave room ", id)
+	room.conn.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
 	close(room.done)
 }
 
-func deleteRoom(room *room) {
-	select {
-	case <-room.done:
-		log.Println("normally closed")
-	case <-room.connErr:
-		log.Println("connection error")
-	}
+func removeRoomAtTheEnd(room *room) {
+	<-room.done
 	err := room.conn.Close()
 	if err != nil {
 		log.Println(err)
@@ -107,4 +101,10 @@ func deleteRoom(room *room) {
 		roomList.focusedId = nil
 	}
 	room = nil
+}
+
+func leaveAllRoom() {
+	for id := range roomList.rooms {
+		leaveRoom(id)
+	}
 }
