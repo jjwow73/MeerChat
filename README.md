@@ -16,6 +16,9 @@ Shell CUI 구현하기. shell 명령어 되면서 상단/우측/좌측/하단/ �
 
 
 ### 기능 정리
+참고자료
+https://github.com/faroyam/golang-p2p-chat/blob/master/chat.go
+
 - 노드
     - [ ] 하나의 노드 안에 서버와 클라이언트가 동시에 존재하게 만들기
     - [ ] 다른 서버에 연결 요청
