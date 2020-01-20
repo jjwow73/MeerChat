@@ -41,3 +41,8 @@ https://hamait.tistory.com/1017
     - [ ] 채팅방 탈퇴
     - [ ] 채팅방 초대
 
+- docker
+    1. docker build -t meerchat .
+    2. sudo docker run -it -p 7000:7000 --rm --name meerchat1 meerchat
+    3. sudo docker run -it -p 8000:7000 --rm --name meerchat2 meerchat
+    

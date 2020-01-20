@@ -1,4 +1,4 @@
-#!/bin/bash
+#! /bin/bash
 
-go build ./cmd/node/node.go
-./node
+go build ./cmd/meerchat/meerchat.go
+./meerchat
