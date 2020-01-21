@@ -8,8 +8,12 @@ import (
 )
 
 const (
-	commandRegex        = "meer [a-z0-9]+"
-	commandJoinRegex    = "meer join (?P<addr>[0-9]+(?:\\.[0-9]+){3}:[0-9]+) (?P<id>[a-z0-9]+) (?P<password>[a-z0-9]+)"
+	commandRegex     = "meer [a-z0-9]+"
+	commandJoinRegex = "meer join " +
+		"(?P<addr>[0-9]+(?:\\.[0-9]+){3}:[0-9]+) " +
+		"(?P<id>[a-z0-9]+) " +
+		"(?P<password>[a-z0-9]+) " +
+		"(?P<name>[a-z0-9]+)"
 	commandLeaveRegex   = "meer leave (?P<id>[a-z0-9]+)"
 	commandEnterRegex   = "meer room ([?P<id>a-z0-9]+)"
 	commandMessageRegex = "meer message (?P<message>.+)"
@@ -47,7 +51,7 @@ func handleCommand(text string) {
 
 func handleCommandJoin(text string) {
 	parsedText := getParsedText(commandJoinRegex, text)
-	joinRoom(parsedText[1], parsedText[2], parsedText[3])
+	joinRoom(parsedText[1], parsedText[2], parsedText[3], parsedText[4])
 }
 
 func handleCommandLeave(text string) {

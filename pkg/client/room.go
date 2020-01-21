@@ -26,8 +26,8 @@ type rooms struct {
 
 var roomList rooms
 
-func newRoom(addr string, id string, password string) (r *room, err error) {
-	conn, err := connectToWebsocket(addr, id, password)
+func newRoom(addr string, id string, password string, name string) (r *room, err error) {
+	conn, err := connectToWebsocket(addr, id, password, name)
 	if err != nil {
 		log.Println("dial:", err)
 		return r, err
@@ -50,8 +50,8 @@ func getRoom(id string) (*room, bool) {
 	return room, exist
 }
 
-func joinRoom(addr string, id string, password string) {
-	room, err := newRoom(addr, id, password)
+func joinRoom(addr string, id string, password string, name string) {
+	room, err := newRoom(addr, id, password, name)
 	if err != nil {
 		return
 	}

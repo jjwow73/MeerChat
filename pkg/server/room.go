@@ -59,6 +59,7 @@ func (room *room) receiveMessage(connInfo *connInfo) {
 			log.Println("read error:", err)
 			return
 		}
+		message = append([]byte(connInfo.clientName + ": "), message...)
 		log.Println("message:", message)
 
 		room.broadcast(message)
