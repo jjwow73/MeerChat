@@ -66,7 +66,7 @@ https://hamait.tistory.com/1017
 * * * 
 ### 계정(User)
 계정에 대한 구분은 ip주소와 port번호를 통해 구별할 수 있으며 별도의 닉네임을 가질수 있도록 할 것이다.  
-- [ ] 구조  
+- [x] 구조  
     ├─ name  
     ├─ ipAddress  
     └─ portNumber  
