@@ -76,7 +76,7 @@ https://hamait.tistory.com/1017
 ### 방(Room)
 방에 필요한 내용과 메인 서버에서 관리되어야 하는 부분도 고려해서 설계
 메인 서버에 update된 내역에 대해서 보고해야하며, 수시로 heartbeat를 보내서 방이 살아있음을 보고해야한다.  
-- [ ] 구조  
+- [x] 구조  
     ├─ name : 방 이름  
     ├─ admin : 방장 계정 정보  
     ├─ password  
