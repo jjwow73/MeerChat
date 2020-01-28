@@ -44,7 +44,7 @@ func classifyCommand(input string) command {
 	case matchWithPattern(commandSendRegex, input):
 		result := getParsedText(commandSendRegex, input)
 		return commandSend{
-			message: result["message"],
+			message: result["chat"],
 		}
 	case matchWithPattern(commandListRegex, input):
 		return commandList{}

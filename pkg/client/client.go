@@ -93,7 +93,7 @@ func (a *admin) printMessageOfFocusedConnection() {
 	for {
 		cm := <-a.outputChannel
 		if a.focusedConnection == cm.c {
-			log.Println("recv:", string(cm.message))
+			log.Println(cm.jsonMessage.Name, ":", string(cm.jsonMessage.Content))
 		}
 	}
 }

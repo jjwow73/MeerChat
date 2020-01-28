@@ -11,7 +11,7 @@ const (
 		"(?P<name>[a-z0-9]+)"
 	commandLeaveRegex = "meer leave (?P<id>[a-z0-9]+)"
 	commandFocusRegex = "meer focus (?P<id>[a-z0-9]+)"
-	commandSendRegex  = "meer send (?P<message>.+)"
+	commandSendRegex  = "meer send (?P<chat>.+)"
 	commandListRegex  = "meer list"
 )
 
