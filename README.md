@@ -99,6 +99,10 @@ https://hamait.tistory.com/1017
     - [ ] heartbeat 주기적으로 전송
     - [ ] 업데이트 내용 서버에 전송
 
+- CUI
+    - [ ] cmdline, roomlist, chat로 이루어짐
+    - [ ] 자신이 참여한 방이 room에 표시됨
+    - [ ] cmdline을 통해서 입력한 명령어가 처리되게 해야함
 * * * 
 ### Util
 - 암호 관리
