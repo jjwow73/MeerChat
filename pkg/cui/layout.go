@@ -16,7 +16,7 @@ func layout(g *gocui.Gui) error {
 		views[v.Name()] = v
 	}
 
-	if v, err := g.SetView("UserInfo", 0, maxY-10, int(0.2*float32(maxX)), maxY-6); err != nil {
+	if v, err := g.SetView("userinfo", 0, maxY-10, int(0.2*float32(maxX)), maxY-6); err != nil {
 		if err != gocui.ErrUnknownView {
 			return err
 		}
