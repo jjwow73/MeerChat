@@ -19,9 +19,8 @@ var (
 	curView = -1
 	activeRoom = 0
 	curMode = cmdMode
+	views = make(map[string]*gocui.View)
 )
-
-var views map[string]*gocui.View
 
 var MeerNode = meerchat_node.NewNode()
 var cuiChan = make(chan protocol.Command)
@@ -66,7 +65,6 @@ func newView(g *gocui.Gui) error {
 		fmt.Fprintln(v, strings.Repeat(name+" ", 30))
 	}
 
-	views = append(views, name)
 	curView = len(views) - 1
 	idxView += 1
 	return nil
