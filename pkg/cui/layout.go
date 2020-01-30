@@ -13,6 +13,7 @@ func layout(g *gocui.Gui) error {
 		}
 		v.Title = "Room"
 		v.Wrap = true
+		views = append(views, v)
 	}
 
 	if v, err := g.SetView("UserInfo", 0, maxY-10, int(0.2*float32(maxX)), maxY-6); err != nil {
@@ -24,6 +25,7 @@ func layout(g *gocui.Gui) error {
 		name, ip, port := MeerNode.User.GetUserInfo()
 		info := fmt.Sprintf("%s\n%s\n:%s", name, ip, port)
 		v.Write([]byte(info))
+		views = append(views, v)
 	}
 
 	if v, err := g.SetView("chat", int(0.2*float32(maxX))+1, 0, maxX-1, maxY-11); err != nil {
@@ -33,6 +35,7 @@ func layout(g *gocui.Gui) error {
 		v.Title = "Chat"
 		v.Wrap = true
 		v.Autoscroll = true
+		views = append(views, v)
 	}
 
 	if v, err := g.SetView("chatline", int(0.2*float32(maxX))+1, maxY-10, maxX-1, maxY-6); err != nil {
@@ -43,6 +46,7 @@ func layout(g *gocui.Gui) error {
 		v.Wrap = true
 		v.Autoscroll = true
 		v.Editable = true
+		views = append(views, v)
 	}
 
 	if v, err := g.SetView("cmdline", 0, maxY-5, maxX-1, maxY-1); err != nil {
@@ -53,6 +57,7 @@ func layout(g *gocui.Gui) error {
 		v.Wrap = true
 		v.Autoscroll = true
 		v.Editable = true
+		views = append(views, v)
 
 		if err = newLine(g, v); err != nil {
 			return err

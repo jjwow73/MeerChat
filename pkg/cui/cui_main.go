@@ -15,12 +15,13 @@ const (
 )
 
 var (
-	views = []string{"room1", "room2", "room3"}
 	idxView = 0
 	curView = -1
 	activeRoom = 0
 	curMode = cmdMode
 )
+
+var views []*gocui.View
 
 var MeerNode = meerchat_node.NewNode()
 var cuiChan = make(chan protocol.Command)
