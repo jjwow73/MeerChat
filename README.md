@@ -71,7 +71,7 @@ https://hamait.tistory.com/1017
     ├─ ipAddress  
     └─ portNumber  
 - 계정 관리
-    - [ ] 닉네임 변경
+    - [x] 닉네임 변경
 * * * 
 ### 방(Room)
 방에 필요한 내용과 메인 서버에서 관리되어야 하는 부분도 고려해서 설계
@@ -100,9 +100,9 @@ https://hamait.tistory.com/1017
     - [ ] 업데이트 내용 서버에 전송
 
 - CUI
-    - [v] cmdline, chatline, roomlist, chat로 이루어짐
+    - [x] cmdline, chatline, roomlist, chat로 이루어짐
     - [ ] 자신이 참여한 방이 room에 표시됨
-    - [ ] cmdline을 통해서 입력한 명령어가 처리되게 해야함
+    - [x] cmdline을 통해서 입력한 명령어가 처리되게 해야함
 * * * 
 ### Util
 - 암호 관리
