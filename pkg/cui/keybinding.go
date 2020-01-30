@@ -1,9 +1,10 @@
 package cui
 
 import (
+	"fmt"
 	"github.com/jroimartin/gocui"
 	"regexp"
-	"fmt"
+	"strings"
 )
 
 func quit(g *gocui.Gui, v *gocui.View) error {
@@ -26,6 +27,18 @@ func sendCommand(g *gocui.Gui, v *gocui.View) error {
 			info := fmt.Sprintf("%s %s:%s\n>> ", name, ip, port)
 			v.Write([]byte(info))
 			v.SetCursor(3, 1)
+			return nil
+		} else if matched, _ := regexp.MatchString(commandModifyNicknameRegex, string(command)); matched {
+			v.Clear()
+			name := strings.Split(string(command), " ")[2]
+			MeerNode.User.ModifyNickname(name)
+			info := fmt.Sprintf("name changed : \"%s\"\n>> ", name)
+			v.Write([]byte(info))
+			v.SetCursor(3, 1)
+			views["userinfo"].Clear()
+			name, ip, port := MeerNode.User.GetUserInfo()
+			userInfo := fmt.Sprintf("%s\n%s\n:%s", name, ip, port)
+			views["userinfo"].Write([]byte(userInfo))
 			return nil
 		} else {
 			v.Clear()
