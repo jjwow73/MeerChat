@@ -21,7 +21,7 @@ var (
 	curMode = cmdMode
 )
 
-var views []*gocui.View
+var views map[string]*gocui.View
 
 var MeerNode = meerchat_node.NewNode()
 var cuiChan = make(chan protocol.Command)
