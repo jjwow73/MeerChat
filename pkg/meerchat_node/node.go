@@ -10,12 +10,13 @@ import (
 type Node struct {
 	User *user.User
 	Room []room.Room
-	activeRoom room.Room
+	NumberOfRoom int
+	ActiveRoom int
 }
 
 func NewNode() *Node {
 	_user := user.NewUser()
-	return &Node{User: _user}
+	return &Node{User: _user, NumberOfRoom: 0, ActiveRoom: -1}
 }
 
 func (node *Node) CommandReceiver(cuiChan chan protocol.Command) {
