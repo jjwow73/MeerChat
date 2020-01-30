@@ -22,6 +22,7 @@ var (
 	totalRoom = 0
 	curMode = cmdMode
 	views = make(map[string]*gocui.View)
+	roomUpdateChan = make(chan bool)
 )
 
 var MeerNode = meerchat_node.NewNode()
@@ -78,10 +79,26 @@ func UpdateRoom(g *gocui.Gui, timeout chan bool) error {
 				}
 				return nil
 			})
+		case <- roomUpdateChan:
+			g.Update(func(g *gocui.Gui) error {
+				x := 1
+				y := 1
+				dy := 3
+				for idx := range MeerNode.Room {
+					roomName := fmt.Sprintf("room%d", idx)
+					v, err := g.SetView(roomName, x, y, int(0.2*float32(maxX))-1, y+dy)
+					if err != nil {
+						if err != gocui.ErrUnknownView {
+							return err
+						}
+						v.Wrap = true
+						v.Write([]byte(MeerNode.Room[idx].GetName()))
+					}
+					y = y+dy+1
+				}
+				return nil
+			})
 		}
-
-
-		time.Sleep(1 * time.Second)
 	}
 	return nil
 }

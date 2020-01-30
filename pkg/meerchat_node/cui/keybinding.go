@@ -47,6 +47,7 @@ func sendCommand(g *gocui.Gui, v *gocui.View) error {
 			v.Clear()
 			room, _ := room.NewRoom("hihi", *MeerNode.User, "meer", "00000000", "163.152.3.135", "25258")
 			MeerNode.Room = append(MeerNode.Room, *room)
+			roomUpdateChan <- true
 
 			info := fmt.Sprintf("create room : \"%s\"\n>> ", "hihi")
 			v.Write([]byte(info))
