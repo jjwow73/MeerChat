@@ -10,6 +10,7 @@ import (
 type Node struct {
 	User *user.User
 	Room []room.Room
+	activeRoom room.Room
 }
 
 func NewNode() *Node {
