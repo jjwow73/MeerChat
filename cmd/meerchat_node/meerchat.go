@@ -1,11 +1,11 @@
 package main
 
 import (
-	"github.com/wkd3475/MeerChat/pkg/cui"
+	"github.com/wkd3475/MeerChat/pkg/meerchat_node/cui"
 
 	//"../../pkg/cui"
 )
 
 func main() {
-	cui.Cui()
+	meerchat_node.CuiMain()
 }

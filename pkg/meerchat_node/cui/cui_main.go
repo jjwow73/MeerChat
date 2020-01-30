@@ -1,23 +1,25 @@
-package cui
+package meerchat_node
 
 import (
 	"fmt"
 	"github.com/jroimartin/gocui"
-	"github.com/wkd3475/MeerChat/pkg/protocol"
 	"github.com/wkd3475/MeerChat/pkg/meerchat_node"
+	"github.com/wkd3475/MeerChat/pkg/protocol"
 	"log"
 	"strings"
+	"time"
 )
 
 const (
 	cmdMode  = 1
 	chatMode = 2
+	maxX = 80
+	maxY = 32
 )
 
 var (
-	idxView = 0
-	curView = -1
 	activeRoom = 0
+	totalRoom = 0
 	curMode = cmdMode
 	views = make(map[string]*gocui.View)
 )
@@ -53,20 +55,34 @@ func setCurrentViewOnTop(g *gocui.Gui, name string) (*gocui.View, error) {
 	return g.SetViewOnTop(name)
 }
 
-func newView(g *gocui.Gui) error {
-	maxX, maxY := g.Size()
-	name := fmt.Sprintf("v%v", idxView)
-	v, err := g.SetView(name, 1, 1, int(0.2*float32(maxX))-1, maxY/8)
-	if err != nil {
-		if err != gocui.ErrUnknownView {
-			return err
+func UpdateRoom(g *gocui.Gui, timeout chan bool) error {
+	time.Sleep(2 * time.Second)
+	for {
+		select {
+		case <-timeout:
+			g.Update(func(g *gocui.Gui) error {
+				x := 1
+				y := 1
+				dy := 3
+				for idx := range MeerNode.Room {
+					roomName := fmt.Sprintf("room%d", idx)
+					v, err := g.SetView(roomName, x, y, int(0.2*float32(maxX))-1, y+dy)
+					if err != nil {
+						if err != gocui.ErrUnknownView {
+							return err
+						}
+						v.Wrap = true
+						v.Write([]byte(MeerNode.Room[idx].GetName()))
+					}
+					y = y+dy+1
+				}
+				return nil
+			})
 		}
-		v.Wrap = true
-		fmt.Fprintln(v, strings.Repeat(name+" ", 30))
-	}
 
-	curView = len(views) - 1
-	idxView += 1
+
+		time.Sleep(1 * time.Second)
+	}
 	return nil
 }
 
@@ -80,7 +96,8 @@ func newLine(g *gocui.Gui, v *gocui.View) error {
 	return err
 }
 
-func Cui() {
+func CuiMain() {
+	timeout := make(chan bool)
 	go MeerNode.CommandReceiver(cuiChan)
 
 	g, err := gocui.NewGui(gocui.OutputNormal)
@@ -99,7 +116,16 @@ func Cui() {
 		log.Panicln(err)
 	}
 
-	if err := g.MainLoop(); err != nil && err != gocui.ErrQuit {
+	go func() {
+		for {
+			time.Sleep(1 * time.Second)
+			timeout <- true
+		}
+	} ()
+
+	go UpdateRoom(g, timeout)
+
+	if err := g.MainLoop();  err != nil && err != gocui.ErrQuit {
 		log.Panicln(err)
 	}
 }
