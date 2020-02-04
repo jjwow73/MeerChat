@@ -40,8 +40,8 @@ Shell CUI 구현하기. shell 명령어 되면서 상단/우측/좌측/하단/ �
     - [x] meer leave -id: 이 방을 떠나고 목록에서 제거 
     - [x] meer message -text: 해 텍스트 전송
     - [ ] meer help: 명령어 도움말(meer + 알 수 없는 명령어 일때도 출력)
-- 백그라운드에서 client 프로그램 실행(메세지 송수신 및 출력 기능 담당)
-    - rpc 서버 역할을 함
+- [x] 백그라운드에서 client 프로그램 실행(메세지 송수신 및 출력 기능 담당)
+    - [x] rpc 서버 역할을 함
 - cobra를 rpc client로 사용하여 join, leave, send 기능 처리
     
 ## 논의해볼 점

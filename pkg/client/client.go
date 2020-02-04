@@ -21,11 +21,16 @@ func newAdmin() *admin {
 	}
 }
 
+var a *admin
+
+func init() {
+	a = newAdmin()
+}
+
 func Start() {
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, os.Interrupt)
 
-	a := newAdmin()
 	go a.printMessageOfFocusedConnection()
 	go readInputs(a)
 
