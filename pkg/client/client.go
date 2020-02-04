@@ -1,10 +1,11 @@
 package client
 
 import (
-	"github.com/gorilla/websocket"
 	"log"
 	"os"
 	"os/signal"
+
+	"github.com/gorilla/websocket"
 )
 
 type admin struct {

@@ -1,8 +1,9 @@
 package server
 
 import (
-	"../chat"
 	"log"
+
+	"../chat"
 )
 
 type hub struct {
