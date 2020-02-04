@@ -2,11 +2,13 @@ package server
 
 import (
 	"log"
+
+	"../chat"
 )
 
 type hub struct {
 	connInfos  map[*connInfo]bool
-	broadcast  chan []byte
+	broadcast  chan *chat.Message
 	register   chan *connInfo
 	unregister chan *connInfo
 	done       chan interface{}
@@ -15,7 +17,7 @@ type hub struct {
 func newHub() *hub {
 	hub := &hub{
 		connInfos:  make(map[*connInfo]bool),
-		broadcast:  make(chan []byte),
+		broadcast:  make(chan *chat.Message),
 		register:   make(chan *connInfo),
 		unregister: make(chan *connInfo),
 		done:       make(chan interface{}),
@@ -57,7 +59,7 @@ func (hub *hub) removeConn(connInfo *connInfo) {
 	}
 }
 
-func (hub *hub) sendMessageToEachConn(message []byte) {
+func (hub *hub) sendMessageToEachConn(message *chat.Message) {
 	for connInfo := range hub.connInfos {
 		select {
 		case connInfo.channel <- message:

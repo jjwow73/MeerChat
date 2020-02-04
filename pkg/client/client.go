@@ -2,69 +2,115 @@ package client
 
 import (
 	"log"
-	"net/url"
 	"os"
 	"os/signal"
-	"time"
 
 	"github.com/gorilla/websocket"
 )
 
-type Client struct {
-	Conn *websocket.Conn
-
-	Send chan []byte // Message: server -> client
+type admin struct {
+	connections       map[string]*connection
+	outputChannel     chan *connectionMessage
+	focusedConnection *connection
 }
 
-func DoChatting() {
+func newAdmin() *admin {
+	return &admin{
+		connections:   make(map[string]*connection),
+		outputChannel: make(chan *connectionMessage),
+	}
+}
+
+func Start() {
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, os.Interrupt)
 
-	go handleInput()
+	a := newAdmin()
+	go a.printMessageOfFocusedConnection()
+	go readInputs(a)
 
-	select {
-	case <-interrupt:
-		leaveAllRoom()
-		<-time.After(time.Second)
+	<-interrupt
+	for id := range a.connections {
+		a.leaveConnection(id)
 	}
+
 }
 
-func connectToWebsocket(addr string, id string, password string) (conn *websocket.Conn, err error) {
-	query := "id=" + id + "&" + "password=" + password + "&name=kim"
-	u := url.URL{Scheme: "ws", Host: addr, Path: "/ws", RawQuery: query}
-	log.Printf("connecting to %s", u.String())
-
-	conn, _, err = websocket.DefaultDialer.Dial(u.String(), nil)
-	return conn, err
-}
-
-func readMessage(room *room) {
-	for {
-		_, message, err := room.conn.ReadMessage()
-		if err != nil {
-			select {
-			case <-room.done: // normal closed
-			default: // abnormal closed
-				log.Println("room", room.id, " read error:", err)
-				close(room.done)
-			}
-			return
-		}
-		if room.ifFocused() {
-			log.Printf("recv: %s", message)
-		}
-	}
-}
-
-func writeMessage(message string) {
-	room, exist := getRoom(*roomList.focusedId)
-	if !exist {
-		log.Println("non entered-room")
+func (a *admin) joinConnection(addr, id, password, name string) {
+	connection, err := newConnection(addr, id, password, name)
+	if err != nil {
 		return
 	}
-	err := room.conn.WriteMessage(websocket.TextMessage, []byte(message))
-	if err != nil {
-		log.Println("write error: ", err)
-		close(room.done)
+	a.connections[id] = connection
+	a.focusConnection(id)
+	log.Println("join to connection", id)
+	go connection.readMessage(a.outputChannel)
+	go a.deferRemoveConnection(connection)
+}
+
+func (a *admin) leaveConnection(id string) {
+	connection, exist := a.getConnection(id)
+	if !exist {
+		return
 	}
+	log.Println("leave connection", id)
+	connection.conn.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
+	close(connection.done)
+}
+
+func (a *admin) focusConnection(id string) {
+	c, exist := a.getConnection(id)
+	if !exist {
+		return
+	}
+	log.Println("focus to the connection", id)
+	a.focusedConnection = c
+}
+
+func (a *admin) writeMessageInFocusedConnection(message string) {
+	if a.focusedConnection == nil {
+		log.Println("there aren't focused connection")
+		return
+	}
+	a.focusedConnection.writeMessage(message)
+}
+
+func (a *admin) getConnectionList() {
+	log.Println("get list")
+	for idx, c := range a.connections {
+		log.Println(idx + ". " + c.toString())
+	}
+}
+
+func (a *admin) getConnection(id string) (c *connection, exist bool) {
+	c, exist = a.connections[id]
+	if !exist {
+		log.Println("connection doesn't exist")
+	}
+	return
+}
+
+func (a *admin) printMessageOfFocusedConnection() {
+	for {
+		cm := <-a.outputChannel
+		if a.focusedConnection == cm.c {
+			log.Println(cm.jsonMessage.Name, ":", string(cm.jsonMessage.Content))
+		}
+	}
+}
+
+func (a *admin) deferRemoveConnection(c *connection) {
+	<-c.done
+	a.removeConnection(c)
+}
+
+func (a *admin) removeConnection(c *connection) {
+	if err := c.conn.Close(); err != nil {
+		log.Println(err)
+	}
+	if c == a.focusedConnection {
+		a.focusedConnection = nil
+	}
+	delete(a.connections, c.id)
+	c = nil
 }
