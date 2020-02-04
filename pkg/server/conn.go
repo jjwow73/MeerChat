@@ -1,12 +1,15 @@
 package server
 
-import "github.com/gorilla/websocket"
+import (
+	"../chat"
+	"github.com/gorilla/websocket"
+)
 
 type connInfo struct {
 	conn       *websocket.Conn
 	auth       bool
 	clientName string
-	channel    chan []byte
+	channel    chan *chat.Message
 }
 
 func newConnInfo(conn *websocket.Conn, auth bool, name string) *connInfo {
@@ -14,6 +17,6 @@ func newConnInfo(conn *websocket.Conn, auth bool, name string) *connInfo {
 		conn:       conn,
 		auth:       auth,
 		clientName: name,
-		channel:    make(chan []byte, 256),
+		channel:    make(chan *chat.Message, 256),
 	}
 }

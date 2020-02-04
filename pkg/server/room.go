@@ -1,6 +1,7 @@
 package server
 
 import (
+	"../chat"
 	"github.com/gorilla/websocket"
 	"log"
 )
@@ -37,7 +38,7 @@ func getRoom(id string, password string) (room *room, auth bool) {
 	return createRoom(id, password), true
 }
 
-func (room *room) broadcast(message []byte) {
+func (room *room) broadcast(message *chat.Message) {
 	room.hub.broadcast <- message
 }
 
@@ -59,9 +60,9 @@ func (room *room) receiveMessage(connInfo *connInfo) {
 			log.Println("read error:", err)
 			return
 		}
-		log.Println("message:", message)
+		log.Println("chat:", message)
 
-		room.broadcast(message)
+		room.broadcast(&chat.Message{Content: message, Name: connInfo.clientName})
 	}
 }
 
@@ -69,14 +70,14 @@ func (room *room) sendMessage(connInfo *connInfo) {
 	for {
 		message, ok := <-connInfo.channel
 		if !connInfo.auth {
-			message = []byte(unAuthMessage)
+			message.Content = []byte(unAuthMessage)
 		}
 		if !ok {
 			log.Println("connection closed")
 			connInfo.conn.WriteMessage(websocket.CloseMessage, []byte{})
 			return
 		}
-		err := connInfo.conn.WriteMessage(websocket.TextMessage, message)
+		err := connInfo.conn.WriteJSON(&message)
 		if err != nil {
 			log.Println("write error:", err)
 			return

@@ -7,80 +7,71 @@ import (
 	"regexp"
 )
 
-const (
-	commandRegex        = "meer [a-z0-9]+"
-	commandJoinRegex    = "meer join (?P<addr>[0-9]+(?:\\.[0-9]+){3}:[0-9]+) (?P<id>[a-z0-9]+) (?P<password>[a-z0-9]+)"
-	commandLeaveRegex   = "meer leave (?P<id>[a-z0-9]+)"
-	commandEnterRegex   = "meer room ([?P<id>a-z0-9]+)"
-	commandMessageRegex = "meer message (?P<message>.+)"
-	commandListRegex    = "meer list"
-)
-
-func handleInput() {
+func readInputs(a *admin) {
 	scanner := bufio.NewScanner(os.Stdin)
 	for scanner.Scan() {
-		text := scanner.Text()
+		input := scanner.Text()
 		switch {
-		case matchWithPattern(commandRegex, text):
-			handleCommand(text)
+		case matchWithPattern(commandRegex, input):
+			command := classifyCommand(input)
+			command.handleCommand(a)
 		default:
 			log.Println("not command")
 		}
 	}
 }
 
-func handleCommand(text string) {
+func classifyCommand(input string) command {
 	switch {
-	case matchWithPattern(commandJoinRegex, text):
-		handleCommandJoin(text)
-	case matchWithPattern(commandLeaveRegex, text):
-		handleCommandLeave(text)
-	case matchWithPattern(commandEnterRegex, text):
-		handleCommandEnter(text)
-	case matchWithPattern(commandMessageRegex, text):
-		handleCommandMessage(text)
-	case matchWithPattern(commandListRegex, text):
-		handleCommandList()
+	case matchWithPattern(commandJoinRegex, input):
+		result := getParsedText(commandJoinRegex, input)
+		return commandJoin{
+			addr:     result["addr"],
+			id:       result["id"],
+			password: result["password"],
+			name:     result["name"],
+		}
+	case matchWithPattern(commandLeaveRegex, input):
+		result := getParsedText(commandLeaveRegex, input)
+		return commandLeave{
+			id: result["id"],
+		}
+	case matchWithPattern(commandFocusRegex, input):
+		result := getParsedText(commandFocusRegex, input)
+		return commandFocus{
+			id: result["id"],
+		}
+	case matchWithPattern(commandSendRegex, input):
+		result := getParsedText(commandSendRegex, input)
+		return commandSend{
+			message: result["chat"],
+		}
+	case matchWithPattern(commandListRegex, input):
+		return commandList{}
 	default:
+		return commandUnknown{}
 	}
 }
 
-func handleCommandJoin(text string) {
-	parsedText := getParsedText(commandJoinRegex, text)
-	joinRoom(parsedText[1], parsedText[2], parsedText[3])
-}
-
-func handleCommandLeave(text string) {
-	parsedText := getParsedText(commandLeaveRegex, text)
-	leaveRoom(parsedText[1])
-}
-
-func handleCommandEnter(text string) {
-	parsedText := getParsedText(commandEnterRegex, text)
-	focusRoom(parsedText[1])
-}
-
-func handleCommandMessage(text string) {
-	parsedText := getParsedText(commandMessageRegex, text)
-	writeMessage(parsedText[1])
-}
-
-func handleCommandList() {
-	getRoomList()
-}
-
-func matchWithPattern(pattern string, text string) bool {
+func matchWithPattern(pattern string, text string) (match bool) {
 	match, err := regexp.MatchString(pattern, text)
 	if err != nil {
 		log.Fatal(err)
 	}
-	return match
+	return
 }
 
-func getParsedText(pattern string, text string) []string {
+func getParsedText(pattern string, text string) (result map[string]string) {
 	re, err := regexp.Compile(pattern)
 	if err != nil {
 		log.Fatal(err)
 	}
-	return re.FindStringSubmatch(text)
+	match := re.FindStringSubmatch(text)
+	result = make(map[string]string)
+	for idx, name := range re.SubexpNames() {
+		if name != "" && idx != 0 {
+			result[name] = match[idx]
+		}
+	}
+	return
 }

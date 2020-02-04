@@ -2,7 +2,6 @@ package main
 
 import (
 	"../../pkg/client"
-
 	"flag"
 )
 
@@ -13,5 +12,5 @@ var (
 )
 
 func main() {
-	client.DoChatting()
+	client.Start()
 }
