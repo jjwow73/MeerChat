@@ -18,12 +18,12 @@ func NewUser() *User {
 	return &User{name: conf.Nickname, ipAddress: _ip, portNumber: conf.Port}
 }
 
-type UserError struct {
-	OriginalError error
+type userError struct {
+	msg string
 }
 
-func (userErr *UserError) Error() string {
-	return fmt.Sprintf("User error : %v", userErr.OriginalError)
+func (userErr *userError) Error() string {
+	return fmt.Sprintf("User error : %s", userErr.msg)
 }
 
 func (user *User) GetUserInfo() (string, string, string) {
@@ -32,8 +32,8 @@ func (user *User) GetUserInfo() (string, string, string) {
 
 func (user *User) ModifyNickname(nickname string) error {
 	if len(nickname) < 0 || len(nickname) > 8 {
-		err := fmt.Errorf("nickname length -> 0~8")
-		return &UserError{OriginalError: err}
+		err := fmt.Sprintf("nickname length -> 0~8")
+		return &userError{msg: err}
 	}
 	user.name = nickname
 	return nil

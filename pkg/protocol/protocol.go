@@ -3,13 +3,25 @@ package protocol
 import "bytes"
 
 const (
-	GetUserInfoCode = 100
-	ModifyNicknameCode = 101
+	GetUserInfoCode = byte(0x10)
+	ModifyNicknameCode = byte(0x11)
+	UpdateRoomInfoCode = byte(0x20)
 )
 
 type Command struct {
-	CommandType int
+	OpCode byte
 	Options []byte
 	Answer bytes.Buffer
 }
 
+func (command *Command) Command2Bytes() ([]byte, error) {
+	msg := make([]byte, 4096)
+	var err error
+
+	if command.OpCode == UpdateRoomInfoCode {
+
+		msg[0] = UpdateRoomInfoCode
+	}
+
+	return msg, err
+}

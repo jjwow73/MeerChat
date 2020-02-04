@@ -23,7 +23,7 @@ func (node *Node) CommandReceiver(cuiChan chan protocol.Command) {
 	for {
 		select {
 		case v := <-cuiChan:
-			if v.CommandType == protocol.GetUserInfoCode {
+			if v.OpCode == protocol.GetUserInfoCode {
 				name, ip, port := node.User.GetUserInfo()
 				answer := new(bytes.Buffer)
 				answer.WriteString(name)
@@ -31,9 +31,13 @@ func (node *Node) CommandReceiver(cuiChan chan protocol.Command) {
 				answer.WriteString(port)
 				v.Answer = *answer
 				cuiChan <- v
-			} else if v.CommandType == protocol.ModifyNicknameCode {
+			} else if v.OpCode == protocol.ModifyNicknameCode {
 
 			}
 		}
 	}
+}
+
+func (node *Node) CommandSender(command protocol.Command) {
+
 }

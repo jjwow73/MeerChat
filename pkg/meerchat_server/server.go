@@ -1,4 +1,4 @@
-package server
+package meerchat_server
 
 import (
 	"fmt"
@@ -23,13 +23,7 @@ func MakeServer(myPort int) {
 			continue
 		}
 
-		if clientNum == 0 {
-			go ConnHandler(conn, clientNum)
-			clientNum++
-		} else {
-
-			conn.Close()
-		}
+		go ConnHandler(conn, clientNum)
 
 	}
 }
@@ -54,7 +48,7 @@ func ConnHandler(conn net.Conn, clientNum int) {
 		fmt.Print("receive : ")
 		if 0 < n {
 			data := recvBuf[:n]
-			fmt.Print(string(data))
+			
 		}
 	}
 }
