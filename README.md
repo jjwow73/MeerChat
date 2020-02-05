@@ -42,7 +42,12 @@ Shell CUI 구현하기. shell 명령어 되면서 상단/우측/좌측/하단/ �
     - [ ] meer help: 명령어 도움말(meer + 알 수 없는 명령어 일때도 출력)
 - [x] 백그라운드에서 client 프로그램 실행(메세지 송수신 및 출력 기능 담당)
     - [x] rpc 서버 역할을 함
-- cobra를 rpc client로 사용하여 join, leave, send 기능 처리
+- cobra를 rpc client로 사용
+    - [x] join 기능 구현
+    - [ ] leave 기능 구현
+    - [ ] list 기능 구현
+    - [ ] focus 기능 구현
+    - [ ] send 기능 구현
     
 ## 논의해볼 점
 - go routine이 끝나는 시점을 context로 제어
