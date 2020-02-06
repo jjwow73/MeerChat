@@ -16,8 +16,12 @@ limitations under the License.
 package cmd
 
 import (
+	"../../client"
+	"net/rpc"
+
 	"fmt"
 	"github.com/spf13/cobra"
+	"log"
 	"os"
 
 	homedir "github.com/mitchellh/go-homedir"
@@ -88,4 +92,21 @@ func initConfig() {
 	if err := viper.ReadInConfig(); err == nil {
 		fmt.Println("Using config file:", viper.ConfigFileUsed())
 	}
+}
+
+func getFlagString(cmd *cobra.Command, name string) (flag string) {
+	flag, err := cmd.Flags().GetString(name)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return flag
+}
+
+func rpcService(serviceMethod string, args *client.Args) {
+	c, err := rpc.DialHTTP("tcp", "127.0.0.1:12039")
+	if err != nil {
+		log.Fatal("dialing:", err)
+	}
+	joinCall := c.Go(serviceMethod, args, &client.Reply{}, nil)
+	<-joinCall.Done
 }

@@ -17,9 +17,6 @@ package cmd
 
 import (
 	"../../client"
-	"log"
-	"net/rpc"
-
 	"github.com/spf13/cobra"
 )
 
@@ -34,35 +31,19 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		c, err := rpc.DialHTTP("tcp", "127.0.0.1:12039")
-		if err != nil {
-			log.Fatal("dialing:", err)
-		}
-		addr, err := cmd.Flags().GetString("addr")
-		if err != nil {
-			log.Fatal(err)
-		}
-		id, err := cmd.Flags().GetString("id")
-		if err != nil {
-			log.Fatal(err)
-		}
-		password, err := cmd.Flags().GetString("password")
-		if err != nil {
-			log.Fatal(err)
-		}
-		name, err := cmd.Flags().GetString("name")
-		if err != nil {
-			log.Fatal(err)
-		}
-		flags := &client.Args{
+		addr := getFlagString(cmd, "addr")
+		id := getFlagString(cmd, "id")
+		password := getFlagString(cmd, "password")
+		name := getFlagString(cmd, "name")
+
+		rpcService(
+			"Intermediate.Join",
+			&client.Args{
 			Addr:         addr,
 			RoomId:       id,
 			RoomPassword: password,
 			ClientName:   name,
-		}
-		joinCall := c.Go("Intermediate.Join", flags, &client.Reply{}, nil)
-		replyCall := <-joinCall.Done // will be equal to divCall
-		log.Println(replyCall)
+		})
 	},
 }
 
