@@ -46,7 +46,7 @@ Shell CUI 구현하기. shell 명령어 되면서 상단/우측/좌측/하단/ �
     - [x] join 기능 구현
     - [x] leave 기능 구현
     - [x] list 기능 구현
-    - [ ] focus 기능 구현
+    - [x] focus 기능 구현
     - [ ] send 기능 구현
     
 ## 논의해볼 점
