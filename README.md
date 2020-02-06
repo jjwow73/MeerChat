@@ -47,7 +47,7 @@ Shell CUI 구현하기. shell 명령어 되면서 상단/우측/좌측/하단/ �
     - [x] leave 기능 구현
     - [x] list 기능 구현
     - [x] focus 기능 구현
-    - [ ] send 기능 구현
+    - [x] send 기능 구현
     
 ## 논의해볼 점
 - go routine이 끝나는 시점을 context로 제어
