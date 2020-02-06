@@ -39,11 +39,11 @@ to quickly create a Cobra application.`,
 		rpcService(
 			"Intermediate.Join",
 			&client.Args{
-			Addr:         addr,
-			RoomId:       id,
-			RoomPassword: password,
-			ClientName:   name,
-		})
+				Addr:         addr,
+				RoomId:       id,
+				RoomPassword: password,
+				ClientName:   name,
+			})
 	},
 }
 

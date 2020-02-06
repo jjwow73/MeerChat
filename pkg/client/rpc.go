@@ -15,7 +15,7 @@ type Args struct {
 	Message      string
 }
 
-type Reply struct {}
+type Reply struct{}
 
 type Intermediate struct{}
 

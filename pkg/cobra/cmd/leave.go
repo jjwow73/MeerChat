@@ -36,7 +36,7 @@ to quickly create a Cobra application.`,
 		rpcService(
 			"Intermediate.Leave",
 			&client.Args{
-				RoomId:       id,
+				RoomId: id,
 			})
 	},
 }

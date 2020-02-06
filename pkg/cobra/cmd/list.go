@@ -35,7 +35,7 @@ to quickly create a Cobra application.`,
 		rpcService(
 			"Intermediate.List",
 			&client.Args{},
-			)
+		)
 	},
 }
 
