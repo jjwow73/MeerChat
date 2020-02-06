@@ -44,7 +44,7 @@ Shell CUI 구현하기. shell 명령어 되면서 상단/우측/좌측/하단/ �
     - [x] rpc 서버 역할을 함
 - cobra를 rpc client로 사용
     - [x] join 기능 구현
-    - [ ] leave 기능 구현
+    - [x] leave 기능 구현
     - [ ] list 기능 구현
     - [ ] focus 기능 구현
     - [ ] send 기능 구현
