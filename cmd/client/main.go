@@ -12,5 +12,6 @@ var (
 )
 
 func main() {
-	client.Start()
+	client.RpcStart()
+	//client.Start()
 }

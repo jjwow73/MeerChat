@@ -39,9 +39,14 @@ Shell CUI 구현하기. shell 명령어 되면서 상단/우측/좌측/하단/ �
     - [x] meer room -id: 채팅을 보내거나 볼 room을 선택(이 방의 메세지만 보임)
     - [x] meer leave -id: 이 방을 떠나고 목록에서 제거 
     - [x] meer message -text: 해 텍스트 전송
-    - [ ] meer help: 명령어 도움말(meer + 알 수 없는 명령어 일때도 출력)
-- 백그라운드에서 client 프로그램이 돌아가고, 명령어를 커맨드라인에 입력했을 때 그 client 프로그램에 접근할 수 있는 방법 찾기(너무 어렵다...)
-- 백그라운드에서 읽어온 메세지를 현재 cmd에 출력할 수 있는 방법 찾기(...)
+- [x] 백그라운드에서 client 프로그램 실행(메세지 송수신 및 출력 기능 담당)
+    - [x] rpc 서버 역할을 함
+- cobra를 rpc client로 사용
+    - [x] join 기능 구현
+    - [x] leave 기능 구현
+    - [x] list 기능 구현
+    - [x] focus 기능 구현
+    - [x] send 기능 구현
     
 ## 논의해볼 점
 - go routine이 끝나는 시점을 context로 제어
