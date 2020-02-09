@@ -45,6 +45,8 @@ func (i *Intermediate) List(args *Args, reply *Reply) error {
 }
 
 func RpcStart() {
+	go a.printMessageOfFocusedConnection()
+
 	i := new(Intermediate)
 	rpc.Register(i)
 	rpc.HandleHTTP()
