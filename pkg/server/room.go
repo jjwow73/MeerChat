@@ -60,7 +60,7 @@ func (room *room) receiveMessage(connInfo *connInfo) {
 			log.Println("read error:", err)
 			return
 		}
-		log.Println("chat:", message)
+		log.Println("chat:", string(message))
 
 		room.broadcast(&chat.Message{Content: message, Name: connInfo.clientName})
 	}
