@@ -106,6 +106,10 @@ func (a *admin) getConnectionList() {
 	a.outputChannel <- &connectionMessage{c: nil, jsonMessage: jsonMessage}
 }
 
+func (a *admin) GetConnList() map[string]*connection {
+	return a.connections
+}
+
 func (a *admin) getConnection(id string) (c *connection, exist bool) {
 	c, exist = a.connections[id]
 	if !exist {
