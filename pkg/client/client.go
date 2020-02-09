@@ -25,9 +25,7 @@ func newAdmin() *admin {
 var a *admin
 
 func init() {
-	//log.Println("jjong:ADMIN START")
 	a = newAdmin()
-	go a.printAllMessageFromOutputChannel()
 }
 
 func Start() {
@@ -35,7 +33,6 @@ func Start() {
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, os.Interrupt)
 
-	go a.printMessageOfFocusedConnection()
 	go readInputs(a)
 
 	<-interrupt
@@ -52,9 +49,7 @@ func (a *admin) joinConnection(addr, id, password, name string) {
 	}
 	a.connections[id] = connection
 	a.focusConnection(id)
-	//log.Println("join to connection", id)
-	// connAddr, connId, connNickname := a.focusedConnection.GetConnInfo()
-	//log.Printf("jjong: JOIN %v, %v, %v", connAddr, connId, connNickname)
+
 	go connection.readMessage(a.outputChannel)
 	//server로 outputChannel로 보내기.
 	jsonMessage := chat.Message{Content: []byte("Join to connection:" + id), Name: "Local"}
@@ -75,7 +70,6 @@ func (a *admin) leaveConnection(id string) {
 	jsonMessage := chat.Message{Content: []byte("leave connection" + id), Name: "Local"}
 	a.outputChannel <- &connectionMessage{c: connection, jsonMessage: jsonMessage}
 
-	// log.Println("leave connection", id)
 	connection.conn.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
 	close(connection.done)
 }
@@ -104,11 +98,9 @@ func (a *admin) writeMessageInFocusedConnection(message string) {
 }
 
 func (a *admin) getConnectionList() {
-	// log.Println("get list")
 	getList := "Get List\n"
 	for idx, c := range a.connections {
 		getList += idx + ". " + c.toString() + "\n"
-		// log.Println(idx + ". " + c.toString())
 	}
 	jsonMessage := chat.Message{Content: []byte(getList), Name: "Local"}
 	a.outputChannel <- &connectionMessage{c: nil, jsonMessage: jsonMessage}
@@ -124,27 +116,23 @@ func (a *admin) getConnection(id string) (c *connection, exist bool) {
 }
 
 func (a *admin) printMessageOfFocusedConnection() {
-	//log.Println("printMessageOfConnection")
-	for cm := range a.outputChannel {
-		//log.Println("PRINT:", cm.jsonMessage.Name, ":", string(cm.jsonMessage.Content))
+	for {
+		cm := <-a.outputChannel
 		if a.focusedConnection == cm.c {
-			//	log.Println(cm.jsonMessage.Name, ":", string(cm.jsonMessage.Content))
+			log.Println(cm.jsonMessage.Name, ":", string(cm.jsonMessage.Content))
 		}
 	}
-	/*
-		for {
-			cm := <-a.outputChannel
-			log.Println("PRINT:", cm.jsonMessage.Name, ":", string(cm.jsonMessage.Content))
-			if a.focusedConnection == cm.c {
-				log.Println(cm.jsonMessage.Name, ":", string(cm.jsonMessage.Content))
-			}
-		}*/
 }
 
 func (a *admin) printAllMessageFromOutputChannel() {
-	//log.Println("printAllMessageFromOutputChannel START")
+
 	for cm := range a.outputChannel {
-		log.Println(cm.jsonMessage.Name, ":", string(cm.jsonMessage.Content))
+		if a.focusedConnection == cm.c {
+			log.Println(cm.jsonMessage.Name, ":", string(cm.jsonMessage.Content))
+		}
+		if cm.c == nil {
+			log.Println(cm.jsonMessage.Name, ":", string(cm.jsonMessage.Content))
+		}
 	}
 }
 
@@ -159,7 +147,6 @@ func (a *admin) removeConnection(c *connection) {
 		jsonMessage := chat.Message{Content: []byte("Connection Closed"), Name: "Server"}
 		a.outputChannel <- &connectionMessage{c: c, jsonMessage: jsonMessage}
 
-		// log.Println(err)
 	}
 	if c == a.focusedConnection {
 		a.focusedConnection = nil
