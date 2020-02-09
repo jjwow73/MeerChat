@@ -1,9 +1,10 @@
 package server
 
 import (
+	"log"
+
 	"../chat"
 	"github.com/gorilla/websocket"
-	"log"
 )
 
 const unAuthMessage = "meer"
@@ -60,7 +61,7 @@ func (room *room) receiveMessage(connInfo *connInfo) {
 			log.Println("read error:", err)
 			return
 		}
-		log.Println("chat:", message)
+		log.Printf("room[%v]'s chat: %v", room.id, message)
 
 		room.broadcast(&chat.Message{Content: message, Name: connInfo.clientName})
 	}
@@ -77,7 +78,8 @@ func (room *room) sendMessage(connInfo *connInfo) {
 			connInfo.conn.WriteMessage(websocket.CloseMessage, []byte{})
 			return
 		}
-		err := connInfo.conn.WriteJSON(&message)
+		log.Println("YEEEE", message)
+		err := connInfo.conn.WriteJSON(message)
 		if err != nil {
 			log.Println("write error:", err)
 			return

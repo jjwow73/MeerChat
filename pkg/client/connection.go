@@ -1,11 +1,12 @@
 package client
 
 import (
-	"../chat"
 	"encoding/json"
-	"github.com/gorilla/websocket"
 	"log"
 	"net/url"
+
+	"../chat"
+	"github.com/gorilla/websocket"
 )
 
 type connection struct {
@@ -39,6 +40,7 @@ func newConnection(addr, id, password, name string) (c *connection, err error) {
 func (c *connection) readMessage(channel chan *connectionMessage) {
 	for {
 		_, message, err := c.conn.ReadMessage()
+		log.Println("HEY, why are you crying?")
 		if err != nil {
 			select {
 			case <-c.done: // normal closed
@@ -54,6 +56,7 @@ func (c *connection) readMessage(channel chan *connectionMessage) {
 			log.Println("json parsing:", err)
 			continue
 		}
+		log.Println("So Nan Da...", jsonMessage)
 		channel <- &connectionMessage{c: c, jsonMessage: jsonMessage}
 	}
 }

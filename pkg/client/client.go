@@ -28,6 +28,7 @@ func init() {
 }
 
 func Start() {
+	log.Println("START")
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, os.Interrupt)
 
@@ -96,12 +97,21 @@ func (a *admin) getConnection(id string) (c *connection, exist bool) {
 }
 
 func (a *admin) printMessageOfFocusedConnection() {
-	for {
-		cm := <-a.outputChannel
+	log.Println("printMessageOfConnection")
+	for cm := range a.outputChannel {
+		log.Println("PRINT:", cm.jsonMessage.Name, ":", string(cm.jsonMessage.Content))
 		if a.focusedConnection == cm.c {
 			log.Println(cm.jsonMessage.Name, ":", string(cm.jsonMessage.Content))
 		}
 	}
+	/*
+		for {
+			cm := <-a.outputChannel
+			log.Println("PRINT:", cm.jsonMessage.Name, ":", string(cm.jsonMessage.Content))
+			if a.focusedConnection == cm.c {
+				log.Println(cm.jsonMessage.Name, ":", string(cm.jsonMessage.Content))
+			}
+		}*/
 }
 
 func (a *admin) deferRemoveConnection(c *connection) {

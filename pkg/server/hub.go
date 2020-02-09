@@ -34,6 +34,7 @@ func (hub *hub) run() {
 		case connInfo := <-hub.unregister:
 			hub.removeConn(connInfo)
 		case message := <-hub.broadcast:
+			log.Println("Broadcasting")
 			hub.sendMessageToEachConn(message)
 		case <-hub.done:
 			return
