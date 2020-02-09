@@ -25,13 +25,13 @@ func newAdmin() *admin {
 var a *admin
 
 func init() {
-	log.Println("jjong:ADMIN START")
+	//log.Println("jjong:ADMIN START")
 	a = newAdmin()
 	go a.printAllMessageFromOutputChannel()
 }
 
 func Start() {
-	log.Println("jjong:START")
+	//log.Println("jjong:START")
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, os.Interrupt)
 
@@ -126,9 +126,9 @@ func (a *admin) getConnection(id string) (c *connection, exist bool) {
 func (a *admin) printMessageOfFocusedConnection() {
 	//log.Println("printMessageOfConnection")
 	for cm := range a.outputChannel {
-		log.Println("PRINT:", cm.jsonMessage.Name, ":", string(cm.jsonMessage.Content))
+		//log.Println("PRINT:", cm.jsonMessage.Name, ":", string(cm.jsonMessage.Content))
 		if a.focusedConnection == cm.c {
-			log.Println(cm.jsonMessage.Name, ":", string(cm.jsonMessage.Content))
+			//	log.Println(cm.jsonMessage.Name, ":", string(cm.jsonMessage.Content))
 		}
 	}
 	/*
