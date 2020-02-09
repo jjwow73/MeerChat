@@ -13,6 +13,7 @@ type connection struct {
 	addr     string
 	id       string
 	password string
+	nickname string //save My nickname
 	conn     *websocket.Conn
 	done     chan interface{}
 }
@@ -32,6 +33,7 @@ func newConnection(addr, id, password, name string) (c *connection, err error) {
 		addr:     addr,
 		id:       id,
 		password: password,
+		nickname: name,
 		conn:     conn,
 		done:     make(chan interface{}),
 	}, nil
@@ -40,7 +42,7 @@ func newConnection(addr, id, password, name string) (c *connection, err error) {
 func (c *connection) readMessage(channel chan *connectionMessage) {
 	for {
 		_, message, err := c.conn.ReadMessage()
-		log.Println("HEY, why are you crying?")
+		// log.Println("HEY, Beom! why are you crying?")
 		if err != nil {
 			select {
 			case <-c.done: // normal closed
@@ -56,7 +58,7 @@ func (c *connection) readMessage(channel chan *connectionMessage) {
 			log.Println("json parsing:", err)
 			continue
 		}
-		log.Println("So Nan Da...", jsonMessage)
+		// log.Println("So Nan Da...", jsonMessage)
 		channel <- &connectionMessage{c: c, jsonMessage: jsonMessage}
 	}
 }
@@ -71,6 +73,11 @@ func (c *connection) writeMessage(message string) {
 
 func (c *connection) toString() string {
 	return c.addr + " " + c.id
+}
+
+// GetConnInfo: 접속의 정보를 가져온다. -returns: addr, roomId, nickname
+func (c *connection) GetConnInfo() (string, string, string) {
+	return c.addr, c.id, c.nickname
 }
 
 func connectToWebsocket(addr, id, password, name string) (conn *websocket.Conn, err error) {
