@@ -13,6 +13,8 @@ var (
 )
 
 func main() {
+
+	go client.CuiMain()
 	client.RpcStart()
 	//client.Start()
 }
