@@ -12,8 +12,6 @@ import (
 const (
 	cmdMode  = 1
 	chatMode = 2
-	maxX     = 80
-	maxY     = 32
 )
 
 var (
@@ -53,6 +51,7 @@ func setCurrentViewOnTop(g *gocui.Gui, name string) (*gocui.View, error) {
 }
 
 func UpdateRoom(g *gocui.Gui, timeout chan bool) error {
+	maxX, _ := g.Size()
 	rooms := a.connections
 	time.Sleep(2 * time.Second)
 	for {

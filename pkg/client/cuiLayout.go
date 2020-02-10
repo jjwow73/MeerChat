@@ -7,6 +7,7 @@ import (
 )
 
 func layout(g *gocui.Gui) error {
+	maxX, maxY := g.Size()
 	if v, err := g.SetView("room", 0, 0, int(0.2*float32(maxX)), maxY-11); err != nil {
 		if err != gocui.ErrUnknownView {
 			return err
