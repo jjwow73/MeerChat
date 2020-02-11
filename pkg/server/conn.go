@@ -1,8 +1,8 @@
 package server
 
 import (
-	"../chat"
 	"github.com/gorilla/websocket"
+	"github.com/jjow73/MeerChat/pkg/chat"
 )
 
 type connInfo struct {

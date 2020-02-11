@@ -3,7 +3,7 @@ package server
 import (
 	"log"
 
-	"../chat"
+	"github.com/jjow73/MeerChat/pkg/chat"
 )
 
 type hub struct {

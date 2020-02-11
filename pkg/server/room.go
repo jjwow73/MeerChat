@@ -3,8 +3,8 @@ package server
 import (
 	"log"
 
-	"../chat"
 	"github.com/gorilla/websocket"
+	"github.com/jjow73/MeerChat/pkg/chat"
 )
 
 const unAuthMessage = "meer"

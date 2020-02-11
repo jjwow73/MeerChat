@@ -5,8 +5,8 @@ import (
 	"log"
 	"net/url"
 
-	"../chat"
 	"github.com/gorilla/websocket"
+	"github.com/jjow73/MeerChat/pkg/chat"
 )
 
 type connection struct {
