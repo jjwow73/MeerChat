@@ -1,12 +1,11 @@
 package client
 
 import (
+	"github.com/gorilla/websocket"
+	"github.com/jjow73/MeerChat/pkg/chat"
 	"log"
 	"os"
 	"os/signal"
-
-	"../chat"
-	"github.com/gorilla/websocket"
 )
 
 type admin struct {

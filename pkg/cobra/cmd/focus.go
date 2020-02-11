@@ -16,7 +16,7 @@ limitations under the License.
 package cmd
 
 import (
-	"../../client"
+	"github.com/jjow73/MeerChat/pkg/client"
 
 	"github.com/spf13/cobra"
 )
