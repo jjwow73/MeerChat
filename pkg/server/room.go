@@ -4,7 +4,7 @@ import (
 	"log"
 
 	"github.com/gorilla/websocket"
-	"github.com/jjow73/MeerChat/pkg/chat"
+	"github.com/jjwow73/MeerChat/pkg/chat"
 )
 
 const unAuthMessage = "meer"

@@ -3,7 +3,7 @@ package main
 import (
 	"flag"
 
-	"github.com/jjow73/MeerChat/pkg/server"
+	"github.com/jjwow73/MeerChat/pkg/server"
 )
 
 var addr = flag.String("addr", ":8080", "http service address")
