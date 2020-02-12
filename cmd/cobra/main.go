@@ -15,7 +15,7 @@ limitations under the License.
 */
 package main
 
-import "github.com/jjow73/MeerChat/pkg/cobra/cmd"
+import "github.com/jjwow73/MeerChat/pkg/cobra/cmd"
 
 func main() {
 	cmd.Execute()

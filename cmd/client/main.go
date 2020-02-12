@@ -3,7 +3,7 @@ package main
 import (
 	"flag"
 
-	"github.com/jjow73/MeerChat/pkg/client"
+	"github.com/jjwow73/MeerChat/pkg/client"
 )
 
 var (
