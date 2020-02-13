@@ -51,9 +51,15 @@ func RpcStart() {
 	i := new(Intermediate)
 	rpc.Register(i)
 	rpc.HandleHTTP()
+
 	l, e := net.Listen("tcp", ":12039")
+	defer l.Close()
+
 	if e != nil {
 		log.Fatal("listen error:", e)
 	}
-	http.Serve(l, nil)
+
+	go http.Serve(l, nil)
+
+	<-a.done
 }

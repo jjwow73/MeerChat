@@ -1,23 +1,26 @@
 package client
 
 import (
-	"github.com/gorilla/websocket"
-	"github.com/jjwow73/MeerChat/pkg/chat"
 	"log"
 	"os"
 	"os/signal"
+
+	"github.com/gorilla/websocket"
+	"github.com/jjwow73/MeerChat/pkg/chat"
 )
 
 type admin struct {
 	connections       map[string]*connection
 	outputChannel     chan *connectionMessage
 	focusedConnection *connection
+	done              chan bool
 }
 
 func newAdmin() *admin {
 	return &admin{
 		connections:   make(map[string]*connection),
 		outputChannel: make(chan *connectionMessage),
+		done:          make(chan bool),
 	}
 }
 

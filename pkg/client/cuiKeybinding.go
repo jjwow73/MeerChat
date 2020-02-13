@@ -5,6 +5,7 @@ import (
 )
 
 func quit(g *gocui.Gui, v *gocui.View) error {
+	a.done <- true
 	return gocui.ErrQuit
 }
 func keybindings(g *gocui.Gui) error {
