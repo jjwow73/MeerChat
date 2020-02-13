@@ -19,18 +19,23 @@ fi
 
 if [ -e $cobraMain ]; then
     if [[ $EUID -ne 0 ]]; then
-        echo "You are not running as ROOT(sudo)"
         echo "Please run as ROOT(sudo)"
         echo "Aborted"
         exit 1
     else
-        echo "You are running as ROOT(sudo)"
-        echo "Proceeding"
         if grep -q meer "$shitShell"; then
-            echo "Already installed"
-            echo "wanna Delete?"
+            echo "it's been already installed"
+            while true; do
+                read -p "Do you want to delete this program?[y/N] " yn
+                case $yn in
+                    [Yy]* ) echo "Delete Meer"; sed -i '/meer/d' $shitShell; break;;
+                    [Nn]* ) exit;;
+                    * ) echo "Please answer yes or no.";;
+                esac
+            done
+            echo "Finished"
         else
-            echo "alias meer='go run $cobraMain'"
+            alias meer="go run $cobraMain"
             echo "alias meer='go run $cobraMain'" >> $shitShell
             echo "Setting completed. Please restart zsh!"
             exit 0
@@ -39,7 +44,7 @@ if [ -e $cobraMain ]; then
     fi
 else
     echo "You dont have files."
-    echo "Please get files using 'go get github.com/jjwow73/MeerChat....?[beta]'"
+    echo "Please get files using 'go get github.com/jjwow73/MeerChat [beta]'"
     exit 1
 fi
 exit 1
