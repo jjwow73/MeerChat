@@ -20,3 +20,7 @@ func (rm *RoomManager) delete(room *Room) {
 	rm.roomToConnection[room].close()
 	delete(rm.roomToConnection, room)
 }
+
+func (rm *RoomManager) setFocusedRoom(room *Room) {
+	rm.focusedRoom = room
+}
