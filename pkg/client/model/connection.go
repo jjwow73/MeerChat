@@ -34,3 +34,11 @@ func (c *connection) listener(ch chan *chat.MessageProtocol) {
 		ch <- messageProtocol
 	}
 }
+
+func (c *connection) send(message string) {
+	err := c.conn.WriteMessage(websocket.TextMessage, []byte(message))
+	if err != nil {
+		log.Println("write error:", err)
+	}
+}
+
