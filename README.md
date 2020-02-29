@@ -43,3 +43,51 @@ SK미래관에서 만나서 서로 과제 확인 및 코드 리뷰함.
 ### 다음 모임 날짜
 
 2020년 2월 10일 월요일 오전 10시!
+
+
+### 모델
+- Room
+    -[ ] 방 만들기
+    -[ ] 방 삭제
+    
+- Connection
+    -[ ] 웹 소켓 conn 연결
+    -[ ] listen 기능
+    -[ ] 메시지 보내는 기능
+    -[ ] 종료
+    
+- User
+    -[ ] user name 가져오기
+    -[ ] user name 수정하기
+    
+- Room Manager
+    -[ ] Room 리스트를 관리
+    -[ ] focused room 관리
+    -[ ] room 추가/삭제
+    
+- Message
+    -[ ] connection으로 전달
+    -[ ] message 생성
+    
+### 컨트롤러
+- join
+
+- leave
+
+- send
+
+- list
+
+- focus
+
+- name
+
+### 뷰
+- [ ] Room
+    - [ ] Room 목록 갱신(추가/제거)
+    - [ ] Room focus 표시
+- [ ] Chat
+    - [ ] 받은 메세지 출력
+    - [ ] 채팅내역 clean
+- [ ] User
+    - [ ] 받은 유저정보 출력
