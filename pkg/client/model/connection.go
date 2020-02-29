@@ -2,6 +2,7 @@ package model
 
 import (
 	"github.com/gorilla/websocket"
+	"github.com/jjwow73/MeerChat/pkg/chat"
 	"log"
 	"net/url"
 )
@@ -17,4 +18,19 @@ func (c *connection) join(room *Room, user *User) (*websocket.Conn, error) {
 
 	conn, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
 	return conn, err
+}
+
+func (c *connection) listener(ch chan *chat.MessageProtocol) {
+	for {
+		_, messageProtocolReceived, err := c.conn.ReadMessage()
+		if err != nil {
+			return
+		}
+		messageProtocol := &chat.MessageProtocol{}
+		if err := messageProtocol.Unmarshal(messageProtocolReceived); err != nil {
+			log.Println("json parsing:", err)
+			continue
+		}
+		ch <- messageProtocol
+	}
 }

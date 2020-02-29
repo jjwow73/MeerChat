@@ -8,7 +8,7 @@ import (
 
 type hub struct {
 	connInfos  map[*connInfo]bool
-	broadcast  chan *chat.Message
+	broadcast  chan *chat.MessageProtocol
 	register   chan *connInfo
 	unregister chan *connInfo
 	done       chan interface{}
@@ -17,7 +17,7 @@ type hub struct {
 func newHub() *hub {
 	hub := &hub{
 		connInfos:  make(map[*connInfo]bool),
-		broadcast:  make(chan *chat.Message),
+		broadcast:  make(chan *chat.MessageProtocol),
 		register:   make(chan *connInfo),
 		unregister: make(chan *connInfo),
 		done:       make(chan interface{}),
@@ -60,7 +60,7 @@ func (hub *hub) removeConn(connInfo *connInfo) {
 	}
 }
 
-func (hub *hub) sendMessageToEachConn(message *chat.Message) {
+func (hub *hub) sendMessageToEachConn(message *chat.MessageProtocol) {
 	for connInfo := range hub.connInfos {
 		select {
 		case connInfo.channel <- message:
