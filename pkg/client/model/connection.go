@@ -9,6 +9,7 @@ import (
 
 type connection struct {
 	conn *websocket.Conn
+	ch   chan *chat.MessageProtocol
 }
 
 func (c *connection) join(room *Room, user *User) (*websocket.Conn, error) {
@@ -20,10 +21,15 @@ func (c *connection) join(room *Room, user *User) (*websocket.Conn, error) {
 	return conn, err
 }
 
-func (c *connection) listener(ch chan *chat.MessageProtocol) {
+func (c *connection) listener() {
 	for {
 		_, messageProtocolReceived, err := c.conn.ReadMessage()
 		if err != nil {
+			select {
+			case <-c.ch:
+			default:
+				close(c.ch)
+			}
 			return
 		}
 		messageProtocol := &chat.MessageProtocol{}
@@ -31,14 +37,18 @@ func (c *connection) listener(ch chan *chat.MessageProtocol) {
 			log.Println("json parsing:", err)
 			continue
 		}
-		ch <- messageProtocol
+		c.ch <- messageProtocol
 	}
 }
 
 func (c *connection) send(message string) {
 	err := c.conn.WriteMessage(websocket.TextMessage, []byte(message))
 	if err != nil {
-		log.Println("write error:", err)
+		close(c.ch)
 	}
 }
 
+func (c *connection) close() {
+	c.conn.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
+	close(c.ch)
+}
