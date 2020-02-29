@@ -24,3 +24,12 @@ func (rm *RoomManager) delete(room *Room) {
 func (rm *RoomManager) setFocusedRoom(room *Room) {
 	rm.focusedRoom = room
 }
+
+func (rm *RoomManager) getRoomList() []*Room {
+	rooms := make([]*Room, 0, len(rm.roomToConnection))
+	for room := range rm.roomToConnection {
+		rooms = append(rooms, room)
+	}
+
+	return rooms
+}
