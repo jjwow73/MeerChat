@@ -62,7 +62,7 @@ SK미래관에서 만나서 서로 과제 확인 및 코드 리뷰함.
 - Room Manager
     -[ ] Room 리스트를 관리
     -[ ] focused room 관리
-    -[ ] room 추가/삭제
+    -[x] room 추가/삭제
     
 - Message
     -[ ] connection으로 전달

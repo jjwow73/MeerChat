@@ -11,3 +11,12 @@ func NewRoomManager() *RoomManager {
 		focusedRoom:      nil,
 	}
 }
+
+func (rm *RoomManager) add(room *Room, connection *Connection) {
+	rm.roomToConnection[room] = connection
+}
+
+func (rm *RoomManager) delete(room *Room) {
+	rm.roomToConnection[room].close()
+	delete(rm.roomToConnection, room)
+}
