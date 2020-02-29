@@ -7,12 +7,12 @@ import (
 	"net/url"
 )
 
-type connection struct {
+type Connection struct {
 	conn *websocket.Conn
 	ch   chan *chat.MessageProtocol
 }
 
-func (c *connection) join(room *Room, user *User) (*websocket.Conn, error) {
+func (c *Connection) join(room *Room, user *User) (*websocket.Conn, error) {
 	query := "id=" + room.id + "&password=" + room.password + "&name=" + user.name
 	u := url.URL{Scheme: "ws", Host: room.ip + ":" + room.port, Path: "/ws", RawQuery: query}
 	log.Printf("connecting to %s", u.String())
@@ -21,7 +21,7 @@ func (c *connection) join(room *Room, user *User) (*websocket.Conn, error) {
 	return conn, err
 }
 
-func (c *connection) listener() {
+func (c *Connection) listener() {
 	for {
 		_, messageProtocolReceived, err := c.conn.ReadMessage()
 		if err != nil {
@@ -41,14 +41,14 @@ func (c *connection) listener() {
 	}
 }
 
-func (c *connection) send(message string) {
+func (c *Connection) send(message string) {
 	err := c.conn.WriteMessage(websocket.TextMessage, []byte(message))
 	if err != nil {
 		close(c.ch)
 	}
 }
 
-func (c *connection) close() {
+func (c *Connection) close() {
 	c.conn.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
 	close(c.ch)
 }
