@@ -17,6 +17,9 @@ func (rm *RoomManager) add(room *Room, connection *Connection) {
 }
 
 func (rm *RoomManager) delete(room *Room) {
+	if rm.focusedRoom == room {
+		rm.setFocusedRoom(nil)
+	}
 	rm.roomToConnection[room].close()
 	delete(rm.roomToConnection, room)
 }

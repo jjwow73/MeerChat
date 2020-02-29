@@ -63,6 +63,7 @@ SK미래관에서 만나서 서로 과제 확인 및 코드 리뷰함.
     -[x] Room 리스트 가져오기
     -[x] focused room 관리
     -[x] room 추가/삭제
+        -[x] focused room 삭제시 focused room을 nil로 설정
     
 - Message
     -[ ] connection으로 전달
