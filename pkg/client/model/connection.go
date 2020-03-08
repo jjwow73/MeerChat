@@ -12,7 +12,19 @@ type Connection struct {
 	ch   chan *chat.MessageProtocol
 }
 
-func (c *Connection) join(room *Room, user *User) (*websocket.Conn, error) {
+func NewConnection(room Room, user User) *Connection {
+	conn, err := join(room, user)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return &Connection{
+		conn: conn,
+		ch:   make(chan *chat.MessageProtocol),
+	}
+}
+
+func join(room Room, user User) (*websocket.Conn, error) {
 	query := "id=" + room.id + "&password=" + room.password + "&name=" + user.name
 	u := url.URL{Scheme: "ws", Host: room.ip + ":" + room.port, Path: "/ws", RawQuery: query}
 	log.Printf("connecting to %s", u.String())

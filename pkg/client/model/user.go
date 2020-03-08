@@ -4,10 +4,16 @@ type User struct {
 	name string
 }
 
-func (user User) getUserName() string {
+func NewUser(name string) *User {
+	return &User{
+		name: name,
+	}
+}
+
+func (user User) GetUserName() string {
 	return user.name
 }
 
-func (user *User) setUserName(name string) {
+func (user *User) SetUserName(name string) {
 	user.name = name
 }

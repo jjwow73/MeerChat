@@ -1,7 +1,8 @@
 package rpc_protocol
 
 type Args struct {
-	Addr         string
+	IP           string
+	Port         string
 	RoomId       string
 	RoomPassword string
 	UserName     string

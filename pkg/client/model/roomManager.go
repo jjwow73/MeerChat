@@ -12,7 +12,7 @@ func NewRoomManager() *RoomManager {
 	}
 }
 
-func (rm *RoomManager) add(room *Room, connection *Connection) {
+func (rm *RoomManager) Add(room *Room, connection *Connection) {
 	rm.roomToConnection[room] = connection
 }
 
