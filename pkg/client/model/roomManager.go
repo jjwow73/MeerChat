@@ -1,36 +1,50 @@
 package model
 
+import (
+	"github.com/jjwow73/MeerChat/pkg/chat"
+	"github.com/jjwow73/MeerChat/pkg/params"
+	"log"
+)
+
 type RoomManager struct {
-	roomToConnection map[*Room]*Connection
-	focusedRoom      *Room
+	roomsToChan map[*Room]chan *chat.MessageProtocol
+	focusedRoom *Room
 }
 
 func NewRoomManager() *RoomManager {
 	return &RoomManager{
-		roomToConnection: make(map[*Room]*Connection),
-		focusedRoom:      nil,
+		roomsToChan: make(map[*Room]chan *chat.MessageProtocol),
+		focusedRoom: nil,
 	}
 }
 
-func (rm *RoomManager) Add(room *Room, connection *Connection) {
-	rm.roomToConnection[room] = connection
+func (rm *RoomManager) Join(args *params.JoinArgs, username string) {
+	room, err := NewRoom(args, username)
+	if err != nil {
+		log.Fatal(err)
+	}
+	ch := make(chan *chat.MessageProtocol)
+	rm.roomsToChan[room] = ch
+	go room.listener(ch)
 }
 
-func (rm *RoomManager) delete(room *Room) {
+func (rm *RoomManager) Delete(room *Room) {
 	if rm.focusedRoom == room {
-		rm.setFocusedRoom(nil)
+		rm.SetFocusedRoom(nil)
 	}
-	rm.roomToConnection[room].close()
-	delete(rm.roomToConnection, room)
+
+	room.closeRoom()
+	close(rm.roomsToChan[room])
+	delete(rm.roomsToChan, room)
 }
 
-func (rm *RoomManager) setFocusedRoom(room *Room) {
+func (rm *RoomManager) SetFocusedRoom(room *Room) {
 	rm.focusedRoom = room
 }
 
-func (rm *RoomManager) getRoomList() []*Room {
-	rooms := make([]*Room, 0, len(rm.roomToConnection))
-	for room := range rm.roomToConnection {
+func (rm *RoomManager) GetRoomList() []*Room {
+	rooms := make([]*Room, 0, len(rm.roomsToChan))
+	for room := range rm.roomsToChan {
 		rooms = append(rooms, room)
 	}
 

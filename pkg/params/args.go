@@ -1,4 +1,4 @@
-package rpc_protocol
+package params
 
 type Args struct {
 	IP           string
@@ -7,6 +7,13 @@ type Args struct {
 	RoomPassword string
 	UserName     string
 	Message      string
+}
+
+type JoinArgs struct {
+	IP           string
+	Port         string
+	RoomId       string
+	RoomPassword string
 }
 
 type Reply struct{}
