@@ -26,6 +26,16 @@ func (rm *RoomManager) Join(args *params.JoinArgs, username string) {
 	ch := make(chan *chat.MessageProtocol)
 	rm.roomsToChan[room] = ch
 	go room.listener(ch)
+
+	// TODO: RoomManager의 listener 구현, 아래와 같은 느낌
+	//for {
+	//	select {
+	//	case message := <-ch:
+	//		if room == rm.focusedRoom {
+	//			rm.outputChan <- message
+	//		}
+	//	}
+	//}
 }
 
 func (rm *RoomManager) Delete(room *Room) {
