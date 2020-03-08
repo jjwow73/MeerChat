@@ -57,7 +57,7 @@ SK미래관에서 만나서 서로 과제 확인 및 코드 리뷰함.
     
 - User
     -[x] user name 가져오기
-    -[ ] user name 수정하기
+    -[x] user name 수정하기
     
 - Room Manager
     -[x] Room 리스트 가져오기
