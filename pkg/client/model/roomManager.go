@@ -36,17 +36,25 @@ func (rm *RoomManager) Join(args *params.JoinArgs, username string) {
 
 func (rm *RoomManager) listen(room *Room) {
 	for {
-		select {
-		case message, ok := <-rm.roomsToChan[room]:
-			if !ok {
-				rm.delete(room)
-				return
-			}
-
-			if room == rm.focusedRoom {
-				rm.outputChan <- message
-			}
+		message, isChanOpened := rm.receiveMessageFrom(room)
+		if !isChanOpened {
+			return
 		}
+
+		if message == rm.focusedRoom {
+			rm.outputChan <- message
+		}
+	}
+}
+
+func (rm *RoomManager) receiveMessageFrom(room *Room) (message *chat.MessageProtocol, isChanOpened bool) {
+	select {
+	case message, isChanOpened = <-rm.roomsToChan[room]:
+		if !isChanOpened {
+			rm.delete(room)
+			return nil, isChanOpened
+		}
+		return message, isChanOpened
 	}
 }
 
