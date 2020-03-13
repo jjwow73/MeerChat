@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"github.com/jjwow73/MeerChat/pkg/client/model"
 	"github.com/jjwow73/MeerChat/pkg/params"
 	"log"
@@ -37,6 +38,13 @@ func (rs *RpcService) Send(args *params.SendArgs, reply *params.Reply) error {
 
 func (rs *RpcService) Leave(args *params.LeaveArgs, reply *params.Reply) error {
 	roomManager.Leave(args)
+	return nil
+}
+
+func (rs *RpcService) List(args *params.ListArgs, reply *params.Reply) error {
+	//TODO: roomlist 배열을 string으로 변환해서 outputchannel
+	rooms := roomManager.GetRoomList()
+	fmt.Println(rooms)
 	return nil
 }
 

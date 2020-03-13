@@ -17,4 +17,7 @@ type LeaveArgs struct {
 	RoomId string
 }
 
+type ListArgs struct {
+}
+
 type Reply struct{}
