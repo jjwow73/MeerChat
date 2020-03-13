@@ -71,8 +71,7 @@ func (r *Room) send(message string) error {
 	return nil
 }
 
-func (r *Room) closeRoom() {
-	r.conn.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
+func (r *Room) closeRoom() error {
+	err := r.conn.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
+	return err
 }
-
-

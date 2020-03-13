@@ -55,17 +55,38 @@ func (rm *RoomManager) Send(args *params.SendArgs, username string) {
 }
 
 func (rm *RoomManager) Delete(room *Room) {
-	//TODO: 세분화된 delete
 	rm.freeIfFocusedRoom(room)
-
-	room.closeRoom()
-	close(rm.roomsToChan[room])
-	delete(rm.roomsToChan, room)
+	rm.close(room)
+	rm.closeChan(room)
+	rm.removeRoomsToChan(room)
 }
 
 func (rm *RoomManager) freeIfFocusedRoom(room *Room) {
 	if rm.focusedRoom == room {
 		rm.SetFocusedRoom(nil)
+	}
+}
+
+func (rm *RoomManager) close(room *Room) {
+	if err := room.closeRoom(); err != nil {
+		log.Println("이미 닫힌 room을 닫으려 시도")
+	}
+}
+
+func (rm *RoomManager) closeChan(room *Room) {
+	select {
+	case <-rm.roomsToChan[room]:
+		close(rm.roomsToChan[room])
+	default:
+		log.Print("이미 닫힌 chan을 닫으려 시도")
+	}
+}
+
+func (rm *RoomManager) removeRoomsToChan(room *Room) {
+	if _, ok := rm.roomsToChan[room]; ok {
+		delete(rm.roomsToChan, room)
+	} else {
+		log.Println("이미 삭제된 map 제거 시도")
 	}
 }
 
