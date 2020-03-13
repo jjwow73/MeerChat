@@ -1,6 +1,7 @@
 package model
 
 import (
+	"errors"
 	"github.com/jjwow73/MeerChat/pkg/chat"
 	"github.com/jjwow73/MeerChat/pkg/params"
 	"log"
@@ -37,7 +38,7 @@ func (rm *RoomManager) listen(room *Room) {
 		select {
 		case message, ok := <-rm.roomsToChan[room]:
 			if !ok {
-				rm.Delete(room)
+				rm.delete(room)
 				return
 			}
 
@@ -51,11 +52,11 @@ func (rm *RoomManager) listen(room *Room) {
 func (rm *RoomManager) Send(args *params.SendArgs, username string) {
 	//TODO: username 컨트롤러? RM?
 	if err := rm.focusedRoom.send(args.Message); err != nil {
-		rm.Delete(rm.focusedRoom)
+		rm.delete(rm.focusedRoom)
 	}
 }
 
-func (rm *RoomManager) Delete(room *Room) {
+func (rm *RoomManager) delete(room *Room) {
 	rm.freeIfFocusedRoom(room)
 	rm.close(room)
 	rm.closeChan(room)
@@ -102,4 +103,15 @@ func (rm *RoomManager) GetRoomList() []*Room {
 	}
 
 	return rooms
+}
+
+func (rm *RoomManager) Leave(args *params.LeaveArgs) error {
+	for room, _ := range rm.roomsToChan {
+		if (room.ip == args.IP) && (room.port == args.Port) && (room.id == args.RoomId) {
+			rm.delete(room)
+			return nil
+		}
+	}
+
+	return errors.New("no such room")
 }

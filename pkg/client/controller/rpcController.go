@@ -35,6 +35,11 @@ func (rs *RpcService) Send(args *params.SendArgs, reply *params.Reply) error {
 	return nil
 }
 
+func (rs *RpcService) Leave(args *params.LeaveArgs, reply *params.Reply) error {
+	roomManager.Leave(args)
+	return nil
+}
+
 func RpcStart() {
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, os.Interrupt)

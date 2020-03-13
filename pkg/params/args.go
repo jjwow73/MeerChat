@@ -11,4 +11,10 @@ type SendArgs struct {
 	Message string
 }
 
+type LeaveArgs struct {
+	IP     string
+	Port   string
+	RoomId string
+}
+
 type Reply struct{}
