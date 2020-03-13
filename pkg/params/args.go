@@ -7,4 +7,8 @@ type JoinArgs struct {
 	RoomPassword string
 }
 
+type SendArgs struct {
+	Message string
+}
+
 type Reply struct{}

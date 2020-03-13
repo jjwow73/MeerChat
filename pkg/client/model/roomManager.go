@@ -36,8 +36,7 @@ func (rm *RoomManager) listen(room *Room) {
 		select {
 		case message, ok := <-rm.roomsToChan[room]:
 			if !ok {
-				rm.freeIfFocusedRoom(room)
-				delete(rm.roomsToChan, room)
+				rm.Delete(room)
 				return
 			}
 
@@ -48,7 +47,15 @@ func (rm *RoomManager) listen(room *Room) {
 	}
 }
 
+func (rm *RoomManager) Send(args *params.SendArgs, username string) {
+	//TODO: username 컨트롤러? RM?
+	if err := rm.focusedRoom.send(args.Message); err != nil {
+		rm.Delete(rm.focusedRoom)
+	}
+}
+
 func (rm *RoomManager) Delete(room *Room) {
+	//TODO: 세분화된 delete
 	rm.freeIfFocusedRoom(room)
 
 	room.closeRoom()

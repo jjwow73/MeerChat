@@ -66,15 +66,19 @@ SK미래관에서 만나서 서로 과제 확인 및 코드 리뷰함.
         -[x] focused room 삭제시 focused room을 nil로 설정
     
 - Message
-    -[ ] connection으로 전달
-    -[ ] message 생성
+    -[x] connection으로 전달
+    -[x] message 생성
     
 ### 컨트롤러
-- join
+-[x] join
+    -[x] 컨트롤러에서 구현
+    -[x] 모델에서 구현
 
 - leave
 
 - send
+    -[ ] 컨트롤러에서 구현
+    -[ ] 모델에서 구현
 
 - list
 
