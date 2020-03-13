@@ -40,6 +40,7 @@ func (rm *RoomManager) applyChanTo(room *Room) {
 }
 
 func (rm *RoomManager) listen(room *Room) {
+	defer rm.delete(room)
 	for {
 		message, isChanOpened := rm.receiveMessageFrom(room)
 		if !isChanOpened {
@@ -56,7 +57,6 @@ func (rm *RoomManager) receiveMessageFrom(room *Room) (message *chat.MessageProt
 	select {
 	case message, isChanOpened = <-rm.roomsToChan[room]:
 		if !isChanOpened {
-			rm.delete(room)
 			return nil, isChanOpened
 		}
 		return message, isChanOpened
