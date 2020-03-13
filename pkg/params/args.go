@@ -20,4 +20,10 @@ type LeaveArgs struct {
 type ListArgs struct {
 }
 
+type FocusArgs struct {
+	IP     string
+	Port   string
+	RoomId string
+}
+
 type Reply struct{}

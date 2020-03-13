@@ -2,6 +2,7 @@ package model
 
 import (
 	"errors"
+	"fmt"
 	"github.com/jjwow73/MeerChat/pkg/chat"
 	"github.com/jjwow73/MeerChat/pkg/params"
 	"log"
@@ -105,13 +106,31 @@ func (rm *RoomManager) GetRoomList() []*Room {
 	return rooms
 }
 
-func (rm *RoomManager) Leave(args *params.LeaveArgs) error {
+func (rm *RoomManager) Leave(args *params.LeaveArgs) {
+	room, err := rm.findRoom(args.IP, args.Port, args.RoomId)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	rm.delete(room)
+}
+
+func (rm *RoomManager) findRoom(ip, port, roomId string) (*Room, error) {
 	for room, _ := range rm.roomsToChan {
-		if (room.ip == args.IP) && (room.port == args.Port) && (room.id == args.RoomId) {
-			rm.delete(room)
-			return nil
+		if (room.ip == ip) && (room.port == port) && (room.id == roomId) {
+			return room, nil
 		}
 	}
+	return nil, errors.New("no such room")
+}
 
-	return errors.New("no such room")
+func (rm *RoomManager) Focus(args *params.FocusArgs) {
+	room, err := rm.findRoom(args.IP, args.Port, args.RoomId)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	fmt.Println("현재 room", room, " 주목 room", rm.focusedRoom)
+	rm.SetFocusedRoom(room)
+	fmt.Println("바뀐 뒤, 현재 room", room, " 주목 room", rm.focusedRoom)
 }

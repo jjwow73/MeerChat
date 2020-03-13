@@ -48,6 +48,11 @@ func (rs *RpcService) List(args *params.ListArgs, reply *params.Reply) error {
 	return nil
 }
 
+func (rs *RpcService) Focus(args *params.FocusArgs, reply *params.Reply) error {
+	roomManager.Focus(args)
+	return nil
+}
+
 func RpcStart() {
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, os.Interrupt)
