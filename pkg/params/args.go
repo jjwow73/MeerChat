@@ -26,4 +26,8 @@ type FocusArgs struct {
 	RoomId string
 }
 
+type NameArgs struct {
+	Name string
+}
+
 type Reply struct{}

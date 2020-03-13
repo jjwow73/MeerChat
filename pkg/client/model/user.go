@@ -15,5 +15,6 @@ func (user User) GetUserName() string {
 }
 
 func (user *User) SetUserName(name string) {
+	//TODO: server의 clientName 을 바꿔주는 통신
 	user.name = name
 }

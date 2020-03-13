@@ -53,6 +53,14 @@ func (rs *RpcService) Focus(args *params.FocusArgs, reply *params.Reply) error {
 	return nil
 }
 
+func (rs *RpcService) Name(args *params.NameArgs, reply *params.Reply) error {
+	fmt.Println("Before.Name:", user.GetUserName())
+	user.SetUserName(args.Name)
+	fmt.Println("After.Name:", user.GetUserName())
+
+	return nil
+}
+
 func RpcStart() {
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, os.Interrupt)
