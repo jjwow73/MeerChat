@@ -16,7 +16,7 @@ limitations under the License.
 package cmd
 
 import (
-	"github.com/jjwow73/MeerChat/pkg/client"
+	"github.com/jjwow73/MeerChat/pkg/params"
 	"github.com/spf13/cobra"
 )
 
@@ -31,28 +31,28 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		addr := getFlagString(cmd, "addr")
+		ip := getFlagString(cmd, "ip")
+		port := getFlagString(cmd, "port")
 		id := getFlagString(cmd, "id")
 		password := getFlagString(cmd, "password")
-		name := getFlagString(cmd, "name")
 
 		rpcService(
-			"Intermediate.Join",
-			&client.Args{
-				Addr:         addr,
+			"RpcService.Join",
+			&params.JoinArgs{
+				IP:           ip,
+				Port:         port,
 				RoomId:       id,
 				RoomPassword: password,
-				ClientName:   name,
 			})
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(joinCmd)
-	joinCmd.Flags().String("addr", "127.0.0.1:8080", "Address of the websocket")
-	joinCmd.Flags().String("id", "default room", "Id of the room")
-	joinCmd.Flags().String("password", "default password", "Password of the room")
-	joinCmd.Flags().String("name", "default name", "Name of the client")
+	joinCmd.Flags().String("ip", "127.0.0.1", "Ip of the websocket")
+	joinCmd.Flags().String("port", "8080", "Port")
+	joinCmd.Flags().String("id", "defaultRoom", "Id of the room")
+	joinCmd.Flags().String("password", "defaultPassword", "Password of the room")
 
 	// Here you will define your flags and configuration settings.
 
