@@ -26,8 +26,12 @@ func init() {
 }
 
 func (rs *RpcService) Join(args *params.JoinArgs, reply *params.Reply) error {
-	// TODO: 실패 시 꺼지지 않게
 	roomManager.Join(args, user.GetUserName())
+	return nil
+}
+
+func (rs *RpcService) Send(args *params.SendArgs, reply *params.Reply) error {
+	roomManager.Send(args, user.GetUserName())
 	return nil
 }
 
