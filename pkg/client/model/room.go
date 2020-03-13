@@ -42,7 +42,7 @@ func join(id, password, ip, port, username string) (*websocket.Conn, error) {
 	return conn, err
 }
 
-func (r *Room) listener(ch chan *chat.MessageProtocol) {
+func (r *Room) listenAndSendTo(ch chan *chat.MessageProtocol) {
 	for {
 		_, messageProtocolReceived, err := r.conn.ReadMessage()
 		if err != nil {
@@ -74,3 +74,5 @@ func (r *Room) send(message string) error {
 func (r *Room) closeRoom() {
 	r.conn.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
 }
+
+

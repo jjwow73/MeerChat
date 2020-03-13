@@ -3,6 +3,12 @@ package controller
 import (
 	"github.com/jjwow73/MeerChat/pkg/client/model"
 	"github.com/jjwow73/MeerChat/pkg/params"
+	"log"
+	"net"
+	"net/http"
+	"net/rpc"
+	"os"
+	"os/signal"
 )
 
 type RpcService struct{}
@@ -19,7 +25,28 @@ func init() {
 	user = model.NewUser(defaultName)
 }
 
-func (rs *RpcService) Join(args *params.JoinArgs, reply params.Reply) error {
+func (rs *RpcService) Join(args *params.JoinArgs, reply *params.Reply) error {
+	// TODO: 실패 시 꺼지지 않게
 	roomManager.Join(args, user.GetUserName())
 	return nil
+}
+
+func RpcStart() {
+	interrupt := make(chan os.Signal, 1)
+	signal.Notify(interrupt, os.Interrupt)
+
+	i := new(RpcService)
+	rpc.Register(i)
+	rpc.HandleHTTP()
+
+	l, e := net.Listen("tcp", ":12039")
+	defer l.Close()
+
+	if e != nil {
+		log.Fatal("listen error", e)
+	}
+
+	go http.Serve(l, nil)
+
+	<-interrupt
 }
