@@ -27,6 +27,7 @@ func (rm *RoomManager) Join(args *params.JoinArgs, username string) {
 	}
 	ch := make(chan *chat.MessageProtocol)
 	rm.roomsToChan[room] = ch
+	rm.SetFocusedRoom(room)
 	go room.listenAndSendTo(ch)
 	go rm.listen(room)
 }
