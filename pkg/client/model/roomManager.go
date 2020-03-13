@@ -9,6 +9,7 @@ import (
 type RoomManager struct {
 	roomsToChan map[*Room]chan *chat.MessageProtocol
 	focusedRoom *Room
+	outputChan  chan *chat.MessageProtocol
 }
 
 func NewRoomManager() *RoomManager {
@@ -21,31 +22,44 @@ func NewRoomManager() *RoomManager {
 func (rm *RoomManager) Join(args *params.JoinArgs, username string) {
 	room, err := NewRoom(args, username)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		return
 	}
 	ch := make(chan *chat.MessageProtocol)
 	rm.roomsToChan[room] = ch
-	go room.listener(ch)
+	go room.listenAndSendTo(ch)
+	go rm.listen(room)
+}
 
-	// TODO: RoomManager의 listener 구현, 아래와 같은 느낌
-	//for {
-	//	select {
-	//	case message := <-ch:
-	//		if room == rm.focusedRoom {
-	//			rm.outputChan <- message
-	//		}
-	//	}
-	//}
+func (rm *RoomManager) listen(room *Room) {
+	for {
+		select {
+		case message, ok := <-rm.roomsToChan[room]:
+			if !ok {
+				rm.freeIfFocusedRoom(room)
+				delete(rm.roomsToChan, room)
+				return
+			}
+
+			if room == rm.focusedRoom {
+				rm.outputChan <- message
+			}
+		}
+	}
 }
 
 func (rm *RoomManager) Delete(room *Room) {
-	if rm.focusedRoom == room {
-		rm.SetFocusedRoom(nil)
-	}
+	rm.freeIfFocusedRoom(room)
 
 	room.closeRoom()
 	close(rm.roomsToChan[room])
 	delete(rm.roomsToChan, room)
+}
+
+func (rm *RoomManager) freeIfFocusedRoom(room *Room) {
+	if rm.focusedRoom == room {
+		rm.SetFocusedRoom(nil)
+	}
 }
 
 func (rm *RoomManager) SetFocusedRoom(room *Room) {
