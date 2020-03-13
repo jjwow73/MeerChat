@@ -27,9 +27,14 @@ func (rm *RoomManager) Join(args *params.JoinArgs, username string) {
 		log.Println(err)
 		return
 	}
+	rm.SetFocusedRoom(room)
+	rm.applyChanTo(room)
+}
+
+func (rm *RoomManager) applyChanTo(room *Room) {
 	ch := make(chan *chat.MessageProtocol)
 	rm.roomsToChan[room] = ch
-	rm.SetFocusedRoom(room)
+
 	go room.listenAndSendTo(ch)
 	go rm.listen(room)
 }
