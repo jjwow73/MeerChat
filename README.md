@@ -47,58 +47,58 @@ SK미래관에서 만나서 서로 과제 확인 및 코드 리뷰함.
 
 ### 모델
 - Room
-    -[x] 방 만들기
+    - [x] 방 만들기
     
 - Connection
-    -[x] 웹 소켓 conn 연결
-    -[x] listen 기능
-    -[x] 메시지 보내는 기능
-    -[x] 종료
+    - [x] 웹 소켓 conn 연결
+    - [x] listen 기능
+    - [x] 메시지 보내는 기능
+    - [x] 종료
     
 - User
-    -[x] user name 가져오기
-    -[x] user name 수정하기
+    - [x] user name 가져오기
+    - [x] user name 수정하기
     
 - Room Manager
-    -[x] Room 리스트 가져오기
-    -[x] focused room 관리
-    -[x] room 추가/삭제
-        -[x] focused room 삭제시 focused room을 nil로 설정
+    - [x] Room 리스트 가져오기
+    - [x] focused room 관리
+    - [x] room 추가/삭제
+        - [x] focused room 삭제시 focused room을 nil로 설정
     
 - Message
-    -[x] connection으로 전달
-    -[x] message 생성
+    - [x] connection으로 전달
+    - [x] message 생성
     
 ### 컨트롤러
--[x] join
-    -[x] 컨트롤러에서 구현
-    -[x] 모델에서 구현
-    -[x] cobra에서 구현
+- join
+    - [x] 컨트롤러에서 구현
+    - [x] 모델에서 구현
+    - [x] cobra에서 구현
 
 - leave
-    -[x] 컨트롤러에서 구현
-    -[x] 모델에서 구현
-    -[x] cobra에서 구현
+    - [x] 컨트롤러에서 구현
+    - [x] 모델에서 구현
+    - [x] cobra에서 구현
 
 - send
-    -[x] 컨트롤러에서 구현
-    -[x] 모델에서 구현
-    -[x] cobra에서 구현
+    - [x] 컨트롤러에서 구현
+    - [x] 모델에서 구현
+    - [x] cobra에서 구현
 
 - list
-    -[x] 컨트롤러에서 구현
-    -[x] 모델에서 구현
-    -[x] cobra에서 구현
+    - [x] 컨트롤러에서 구현
+    - [x] 모델에서 구현
+    - [x] cobra에서 구현
     
 - focus
-    -[x] 컨트롤러에서 구현
-    -[x] 모델에서 구현
-    -[x] cobra에서 구현
+    - [x] 컨트롤러에서 구현
+    - [x] 모델에서 구현
+    - [x] cobra에서 구현
 
 - name
-    -[x] 컨트롤러에서 구현
-    -[x] 모델에서 구현
-    -[x] cobra에서 구현
+    - [x] 컨트롤러에서 구현
+    - [x] 모델에서 구현
+    - [x] cobra에서 구현
     
 ### 뷰
 - [ ] Room
