@@ -17,13 +17,12 @@ package cmd
 
 import (
 	"github.com/jjwow73/MeerChat/pkg/params"
-
 	"github.com/spf13/cobra"
 )
 
-// leaveCmd represents the leave command
-var leaveCmd = &cobra.Command{
-	Use:   "leave",
+// nameCmd represents the name command
+var nameCmd = &cobra.Command{
+	Use:   "name",
 	Short: "A brief description of your command",
 	Long: `A longer description that spans multiple lines and likely contains examples
 and usage of using your command. For example:
@@ -32,32 +31,24 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		ip := getFlagString(cmd, "ip")
-		port := getFlagString(cmd, "port")
-		id := getFlagString(cmd, "id")
-
 		rpcService(
-			"RpcService.Leave",
-			&params.JoinArgs{
-				IP:     ip,
-				Port:   port,
-				RoomId: id,
+			"RpcService.Name",
+			&params.NameArgs{
+				Name: args[0],
 			})
 	},
 }
 
 func init() {
-	rootCmd.AddCommand(leaveCmd)
-	leaveCmd.Flags().String("ip", "127.0.0.1", "Ip of the websocket")
-	leaveCmd.Flags().String("port", "8080", "Port")
-	leaveCmd.Flags().String("id", "defaultRoom", "Id of the room")
+	rootCmd.AddCommand(nameCmd)
+
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
-	// leaveCmd.PersistentFlags().String("foo", "", "A help for foo")
+	// nameCmd.PersistentFlags().String("foo", "", "A help for foo")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	// leaveCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	// nameCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }

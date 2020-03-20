@@ -16,8 +16,7 @@ limitations under the License.
 package cmd
 
 import (
-	"github.com/jjwow73/MeerChat/pkg/client"
-
+	"github.com/jjwow73/MeerChat/pkg/params"
 	"github.com/spf13/cobra"
 )
 
@@ -32,10 +31,15 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
+		ip := getFlagString(cmd, "ip")
+		port := getFlagString(cmd, "port")
 		id := getFlagString(cmd, "id")
+
 		rpcService(
-			"Intermediate.Focus",
-			&client.Args{
+			"RpcService.Focus",
+			&params.FocusArgs{
+				IP:     ip,
+				Port:   port,
 				RoomId: id,
 			})
 	},
@@ -43,7 +47,9 @@ to quickly create a Cobra application.`,
 
 func init() {
 	rootCmd.AddCommand(focusCmd)
-	focusCmd.Flags().String("id", "default room", "Id of the room")
+	focusCmd.Flags().String("ip", "127.0.0.1", "Ip of the websocket")
+	focusCmd.Flags().String("port", "8080", "Port")
+	focusCmd.Flags().String("id", "defaultRoom", "Id of the room")
 
 	// Here you will define your flags and configuration settings.
 

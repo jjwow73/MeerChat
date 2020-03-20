@@ -9,7 +9,7 @@ type connInfo struct {
 	conn       *websocket.Conn
 	auth       bool
 	clientName string
-	channel    chan *chat.Message
+	channel    chan *chat.MessageProtocol
 }
 
 func newConnInfo(conn *websocket.Conn, auth bool, name string) *connInfo {
@@ -17,6 +17,6 @@ func newConnInfo(conn *websocket.Conn, auth bool, name string) *connInfo {
 		conn:       conn,
 		auth:       auth,
 		clientName: name,
-		channel:    make(chan *chat.Message, 256),
+		channel:    make(chan *chat.MessageProtocol, 256),
 	}
 }

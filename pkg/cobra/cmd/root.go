@@ -16,7 +16,7 @@ limitations under the License.
 package cmd
 
 import (
-	"github.com/jjwow73/MeerChat/pkg/client"
+	"github.com/jjwow73/MeerChat/pkg/params"
 	"net/rpc"
 
 	"fmt"
@@ -102,11 +102,11 @@ func getFlagString(cmd *cobra.Command, name string) (flag string) {
 	return flag
 }
 
-func rpcService(serviceMethod string, args *client.Args) {
+func rpcService(serviceMethod string, args interface{}) {
 	c, err := rpc.DialHTTP("tcp", "127.0.0.1:12039")
 	if err != nil {
 		log.Fatal("dialing:", err)
 	}
-	joinCall := c.Go(serviceMethod, args, &client.Reply{}, nil)
+	joinCall := c.Go(serviceMethod, args, &params.Reply{}, nil)
 	<-joinCall.Done
 }

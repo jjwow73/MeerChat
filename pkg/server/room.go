@@ -39,7 +39,7 @@ func getRoom(id string, password string) (room *room, auth bool) {
 	return createRoom(id, password), true
 }
 
-func (room *room) broadcast(message *chat.Message) {
+func (room *room) broadcast(message *chat.MessageProtocol) {
 	room.hub.broadcast <- message
 }
 
@@ -63,7 +63,7 @@ func (room *room) receiveMessage(connInfo *connInfo) {
 		}
 		log.Println("chat:", string(message))
 
-		room.broadcast(&chat.Message{Content: message, Name: connInfo.clientName})
+		room.broadcast(&chat.MessageProtocol{Message: message, Name: connInfo.clientName})
 	}
 }
 
@@ -71,7 +71,7 @@ func (room *room) sendMessage(connInfo *connInfo) {
 	for {
 		message, ok := <-connInfo.channel
 		if !connInfo.auth {
-			message.Content = []byte(unAuthMessage)
+			message.Message = []byte(unAuthMessage)
 		}
 		if !ok {
 			log.Println("connection closed")

@@ -16,8 +16,7 @@ limitations under the License.
 package cmd
 
 import (
-	"github.com/jjwow73/MeerChat/pkg/client"
-
+	"github.com/jjwow73/MeerChat/pkg/params"
 	"github.com/spf13/cobra"
 )
 
@@ -33,9 +32,8 @@ This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		rpcService(
-			"Intermediate.List",
-			&client.Args{},
-		)
+			"RpcService.List",
+			&params.ListArgs{})
 	},
 }
 
