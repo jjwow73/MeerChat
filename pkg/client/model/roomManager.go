@@ -47,7 +47,7 @@ func (rm *RoomManager) listen(room *Room) {
 			return
 		}
 
-		if message == rm.focusedRoom {
+		if room == rm.focusedRoom {
 			rm.outputChan <- message
 		}
 	}
