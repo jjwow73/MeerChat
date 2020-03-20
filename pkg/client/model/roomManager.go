@@ -14,10 +14,11 @@ type RoomManager struct {
 	outputChan  chan *chat.MessageProtocol
 }
 
-func NewRoomManager() *RoomManager {
+func NewRoomManager(outputChan chan *chat.MessageProtocol) *RoomManager {
 	return &RoomManager{
 		roomsToChan: make(map[*Room]chan *chat.MessageProtocol),
 		focusedRoom: nil,
+		outputChan: outputChan,
 	}
 }
 

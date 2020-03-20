@@ -2,7 +2,9 @@ package controller
 
 import (
 	"fmt"
+	"github.com/jjwow73/MeerChat/pkg/chat"
 	"github.com/jjwow73/MeerChat/pkg/client/model"
+	"github.com/jjwow73/MeerChat/pkg/client/view"
 	"github.com/jjwow73/MeerChat/pkg/params"
 	"log"
 	"net"
@@ -17,12 +19,16 @@ type RpcService struct{}
 var (
 	roomManager *model.RoomManager
 	user        *model.User
+	outputChan	chan *chat.MessageProtocol
 )
 
-const defaultName = "Meer"
+const (
+	defaultName = "Meer"
+)
 
 func init() {
-	roomManager = model.NewRoomManager()
+	outputChan = make(chan *chat.MessageProtocol)
+	roomManager = model.NewRoomManager(outputChan)
 	user = model.NewUser(defaultName)
 }
 
@@ -77,6 +83,15 @@ func RpcStart() {
 	}
 
 	go http.Serve(l, nil)
+
+	go func() {
+		for {
+			message := <-outputChan
+			view.PrintChatMessage(message)
+		}
+	}()
+
+	go view.Start()
 
 	<-interrupt
 }
