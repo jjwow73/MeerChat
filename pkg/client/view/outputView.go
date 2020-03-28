@@ -68,6 +68,7 @@ func layout(g *gocui.Gui) error {
 		}
 		v.Title = "UserInfo"
 		v.Wrap = true
+		v.Write([]byte("Meer"))
 	}
 
 	if v, err := g.SetView("chat", int(0.2*float32(maxX))+1, 0, maxX-1, maxY-6, 0); err != nil {
@@ -116,13 +117,24 @@ func (v Renderer) PrintRoomList(roomList map[string]bool) {
 	})
 }
 
-func (v Renderer) ClearChat(){
+func (v Renderer) ClearChat() {
 	g.Update(func(g *gocui.Gui) error {
 		v, err := g.View("chat")
 		if err != nil {
 			return err
 		}
 		v.Clear()
+		return nil
+	})
+}
+func PrintUserInfo(name string) {
+	g.Update(func(g *gocui.Gui) error {
+		v, err := g.View("userinfo")
+		if err != nil {
+			return err
+		}
+		v.Clear()
+		v.Write([]byte(name))
 		return nil
 	})
 }

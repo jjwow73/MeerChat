@@ -61,10 +61,8 @@ func (rs *RpcService) Focus(args *params.FocusArgs, reply *params.Reply) error {
 }
 
 func (rs *RpcService) Name(args *params.NameArgs, reply *params.Reply) error {
-	fmt.Println("Before.Name:", user.GetUserName())
 	user.SetUserName(args.Name)
-	fmt.Println("After.Name:", user.GetUserName())
-
+	view.PrintUserInfo(args.Name)
 	return nil
 }
 
