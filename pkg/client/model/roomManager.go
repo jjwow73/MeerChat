@@ -25,6 +25,7 @@ func NewRoomManager(outputChan chan *chat.MessageProtocol, vr ViewRender) *RoomM
 
 type ViewRender interface {
 	PrintRoomList(map[string]bool)
+	ClearChat()
 }
 
 func (rm *RoomManager) Join(args *params.JoinArgs, username string) {
@@ -117,6 +118,7 @@ func (rm *RoomManager) removeRoomsToChan(room *Room) {
 func (rm *RoomManager) SetFocusedRoom(room *Room) {
 	rm.focusedRoom = room
 	rm.viewRenderer.PrintRoomList(rm.getRoomsMap())
+	rm.viewRenderer.ClearChat()
 }
 
 func (rm *RoomManager) GetRoomList() []*Room {

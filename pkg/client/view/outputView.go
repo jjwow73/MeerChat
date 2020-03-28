@@ -115,3 +115,14 @@ func (v Renderer) PrintRoomList(roomList map[string]bool) {
 		return nil
 	})
 }
+
+func (v Renderer) ClearChat(){
+	g.Update(func(g *gocui.Gui) error {
+		v, err := g.View("chat")
+		if err != nil {
+			return err
+		}
+		v.Clear()
+		return nil
+	})
+}
