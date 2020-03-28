@@ -36,7 +36,7 @@ func NewRoom(args *params.JoinArgs, username string) (*Room, error) {
 func join(id, password, ip, port, username string) (*websocket.Conn, error) {
 	query := "id=" + id + "&password=" + password + "&name=" + username
 	u := url.URL{Scheme: "ws", Host: ip + ":" + port, Path: "/ws", RawQuery: query}
-	log.Printf("connecting to %s", u.String())
+	//log.Printf("connecting to %s", u.String())/**/
 
 	conn, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
 	return conn, err

@@ -86,7 +86,7 @@ func (rm *RoomManager) freeIfFocusedRoom(room *Room) {
 
 func (rm *RoomManager) close(room *Room) {
 	if err := room.closeRoom(); err != nil {
-		log.Println("이미 닫힌 room을 닫으려 시도")
+		//log.Println("이미 닫힌 room을 닫으려 시도")
 	}
 }
 
@@ -95,7 +95,7 @@ func (rm *RoomManager) closeChan(room *Room) {
 	case <-rm.roomsToChan[room]:
 		close(rm.roomsToChan[room])
 	default:
-		log.Print("이미 닫힌 chan을 닫으려 시도")
+		//log.Print("이미 닫힌 chan을 닫으려 시도")
 	}
 }
 
@@ -103,7 +103,7 @@ func (rm *RoomManager) removeRoomsToChan(room *Room) {
 	if _, ok := rm.roomsToChan[room]; ok {
 		delete(rm.roomsToChan, room)
 	} else {
-		log.Println("이미 삭제된 map 제거 시도")
+		//log.Println("이미 삭제된 map 제거 시도")
 	}
 }
 
@@ -144,7 +144,7 @@ func (rm *RoomManager) Focus(args *params.FocusArgs) {
 		log.Println(err)
 		return
 	}
-	fmt.Println("현재 room", room, " 주목 room", rm.focusedRoom)
+	//fmt.Println("현재 room", room, " 주목 room", rm.focusedRoom)
 	rm.SetFocusedRoom(room)
-	fmt.Println("바뀐 뒤, 현재 room", room, " 주목 room", rm.focusedRoom)
+	//fmt.Println("바뀐 뒤, 현재 room", room, " 주목 room", rm.focusedRoom)
 }
