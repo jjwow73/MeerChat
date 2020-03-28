@@ -19,7 +19,7 @@ type RpcService struct{}
 var (
 	roomManager *model.RoomManager
 	user        *model.User
-	outputChan	chan *chat.MessageProtocol
+	outputChan  chan *chat.MessageProtocol
 )
 
 const (
@@ -27,8 +27,9 @@ const (
 )
 
 func init() {
+	renderer := view.Renderer{}
 	outputChan = make(chan *chat.MessageProtocol)
-	roomManager = model.NewRoomManager(outputChan)
+	roomManager = model.NewRoomManager(outputChan, renderer)
 	user = model.NewUser(defaultName)
 }
 

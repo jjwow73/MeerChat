@@ -2,24 +2,29 @@ package model
 
 import (
 	"errors"
-	"fmt"
 	"github.com/jjwow73/MeerChat/pkg/chat"
 	"github.com/jjwow73/MeerChat/pkg/params"
 	"log"
 )
 
 type RoomManager struct {
-	roomsToChan map[*Room]chan *chat.MessageProtocol
-	focusedRoom *Room
-	outputChan  chan *chat.MessageProtocol
+	roomsToChan  map[*Room]chan *chat.MessageProtocol
+	focusedRoom  *Room
+	outputChan   chan *chat.MessageProtocol
+	viewRenderer ViewRender
 }
 
-func NewRoomManager(outputChan chan *chat.MessageProtocol) *RoomManager {
+func NewRoomManager(outputChan chan *chat.MessageProtocol, vr ViewRender) *RoomManager {
 	return &RoomManager{
-		roomsToChan: make(map[*Room]chan *chat.MessageProtocol),
-		focusedRoom: nil,
-		outputChan: outputChan,
+		roomsToChan:  make(map[*Room]chan *chat.MessageProtocol),
+		focusedRoom:  nil,
+		outputChan:   outputChan,
+		viewRenderer: vr,
 	}
+}
+
+type ViewRender interface {
+	PrintRoomList(map[string]bool)
 }
 
 func (rm *RoomManager) Join(args *params.JoinArgs, username string) {
@@ -30,6 +35,7 @@ func (rm *RoomManager) Join(args *params.JoinArgs, username string) {
 	}
 	rm.SetFocusedRoom(room)
 	rm.applyChanTo(room)
+	rm.viewRenderer.PrintRoomList(rm.getRoomsMap())
 }
 
 func (rm *RoomManager) applyChanTo(room *Room) {
@@ -76,6 +82,7 @@ func (rm *RoomManager) delete(room *Room) {
 	rm.close(room)
 	rm.closeChan(room)
 	rm.removeRoomsToChan(room)
+	rm.viewRenderer.PrintRoomList(rm.getRoomsMap())
 }
 
 func (rm *RoomManager) freeIfFocusedRoom(room *Room) {
@@ -109,6 +116,7 @@ func (rm *RoomManager) removeRoomsToChan(room *Room) {
 
 func (rm *RoomManager) SetFocusedRoom(room *Room) {
 	rm.focusedRoom = room
+	rm.viewRenderer.PrintRoomList(rm.getRoomsMap())
 }
 
 func (rm *RoomManager) GetRoomList() []*Room {
@@ -118,6 +126,17 @@ func (rm *RoomManager) GetRoomList() []*Room {
 	}
 
 	return rooms
+}
+
+func (rm *RoomManager) getRoomsMap() map[string]bool {
+	roomsMap := make(map[string]bool)
+	for room := range rm.roomsToChan {
+
+		isFocusedRoom := room == rm.focusedRoom
+		roomsMap[room.id] = isFocusedRoom
+	}
+
+	return roomsMap
 }
 
 func (rm *RoomManager) Leave(args *params.LeaveArgs) {

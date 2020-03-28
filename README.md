@@ -101,9 +101,9 @@ SK미래관에서 만나서 서로 과제 확인 및 코드 리뷰함.
     - [x] cobra에서 구현
     
 ### 뷰
-- [ ] Room
-    - [ ] Room 목록 갱신(추가/제거)
-    - [ ] Room focus 표시
+- [x] Room
+    - [x] Room 목록 갱신(추가/제거)
+    - [x] Room focus 표시
 - [ ] Chat
     - [ ] 받은 메세지 출력
     - [ ] 채팅내역 clean
